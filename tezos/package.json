@@ -4,7 +4,9 @@
   "description": "Tezos Example Box =================",
   "dependencies": {},
   "devDependencies": {
-    "ganache-cli": "^6.10.0-tezos.1"
+    "ganache-cli": "^6.10.0-tezos.1",
+    "husky": "^4.2.5",
+    "truffle": "^5.5.0-tezos.4"
   },
   "scripts": {
     "start-sandbox": "ganache-cli --flavor tezos --seed alice"
