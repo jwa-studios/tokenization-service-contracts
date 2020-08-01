@@ -24,7 +24,9 @@
   },
   "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
   "devDependencies": {
-    "husky": "^4.2.5",
+    "husky": "^4.2.5"
+  },
+  "dependencies": {
     "truffle": "^5.5.0-tezos.4"
   }
 }

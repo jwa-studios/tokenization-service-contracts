@@ -8,5 +8,10 @@ The Tokenization Service's Smart Contracts. This is our custom implementation of
 1. An [FA2] token can be transferred to another custodian, it will result in a burn operation at the origin and a mint at the destination
 1. Upon request, an [FA2] token can be extracted into its own contract with its own address for cold storage
 
+## Implementation
+
+Our implementation will be based on the TQ [FA2 implementation] with our added flavor
+
 
 [FA2]:https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md
+[FA2 implementation]:https://github.com/tqtezos/smart-contracts
