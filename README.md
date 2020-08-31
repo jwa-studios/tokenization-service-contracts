@@ -25,3 +25,18 @@ The Tezos contracts are written in the `./tezos` folder.
 
 [FA2]:https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md
 [FA2 implementation]:https://github.com/tqtezos/smart-contracts
+
+### Test the contracts
+
+Start the sandbox first:
+
+```
+cd tezos
+npm run start-sandbox
+```
+
+Then run the tests:
+
+```
+truffle test
+```

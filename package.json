@@ -1,0 +1,29 @@
+{
+  "name": "tokenization-service-contracts",
+  "version": "0.0.1",
+  "description": "Tokenization Service's Smart Contracts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwa-studios/tokenization-service-contracts.git"
+  },
+  "keywords": [
+    "fa2",
+    "tezos",
+    "smart",
+    "contracts",
+    "tokenization",
+    "service"
+  ],
+  "author": "JWA Studios",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jwa-studios/tokenization-service-contracts/issues"
+  },
+  "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
+  "dependencies": {
+    "truffle": "^5.5.0-tezos.4"
+  }
+}
