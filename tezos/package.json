@@ -4,6 +4,7 @@
   "description": "Tezos Example Box =================",
   "dependencies": {},
   "devDependencies": {
+    "@taquito/taquito": "^6.3.5-beta.0",
     "ganache-cli": "^6.10.0-tezos.1"
   },
   "scripts": {

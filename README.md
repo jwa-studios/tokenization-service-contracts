@@ -38,5 +38,5 @@ npm run start-sandbox
 Then run the tests:
 
 ```
-truffle test
+npx truffle test
 ```
