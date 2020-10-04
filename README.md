@@ -40,3 +40,15 @@ Then run the tests:
 ```
 npx truffle test
 ```
+
+### Deploy to specified network:
+
+```
+npx truffle migrate --network development
+```
+
+Verify:
+
+```
+
+```
