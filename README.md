@@ -17,24 +17,20 @@ There are mostly 2 contracts:
 
 ## Project Structure
 
-The top level project sets up the Tezos Truffle Box.
-The Tezos contracts are written in the `./tezos` folder.
+The Tezos contracts are written in the `./contracts` folder.
 
 ## Getting Started
 
+Ensure you have truffle@tezos
+
 1. Start by cloning this repository
 1. run `npm install` in this folder
-1. run `npm install` in the `./tezos` folder
-
-[FA2]:https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/tzip-12.md
-[FA2 implementation]:https://github.com/tqtezos/smart-contracts
 
 ### Test the contracts
 
 Start the sandbox first:
 
 ```
-cd tezos
 npm run start-sandbox
 ```
 
