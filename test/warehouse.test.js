@@ -24,7 +24,7 @@ contract("Given Warehouse is deployed", () => {
         });
 
         it("Then adds the item to the warehouse", async () => {
-            const item = await storage.warehouse.get("0");
+            const item = await storage.get("0");
             const obj = itemToObject(item);
 
             expect(obj).to.deep.eql({
@@ -49,7 +49,7 @@ contract("Given Warehouse is deployed", () => {
             });
 
             it("Then updates the item in the warehouse", async () => {
-                const item = await storage.warehouse.get("0");
+                const item = await storage.get("0");
                 const obj = itemToObject(item);
 
                 expect(obj).to.eql({
