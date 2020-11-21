@@ -8,6 +8,22 @@ contract("Given Warehouse is deployed", () => {
         warehouseInstance = await Warehouse.deployed()
     });
 
+    describe('When getting the storage', () => {
+        let storage;
+
+        before(async () => {
+            storage = await warehouseInstance.storage();
+        });
+
+        it("Then returns the current version", () => {
+            expect(storage.version).to.equal("1")
+        });
+
+        it("Then returns the owner", () => {
+            expect(storage.owner).to.equal("tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb")
+        });
+    })
+
     describe("When adding a new item", () => {
         let storage;
 
@@ -24,7 +40,7 @@ contract("Given Warehouse is deployed", () => {
         });
 
         it("Then adds the item to the warehouse", async () => {
-            const item = await storage.get("0");
+            const item = await storage.warehouse.get("0");
             const obj = itemToObject(item);
 
             expect(obj).to.deep.eql({
@@ -49,7 +65,7 @@ contract("Given Warehouse is deployed", () => {
             });
 
             it("Then updates the item in the warehouse", async () => {
-                const item = await storage.get("0");
+                const item = await storage.warehouse.get("0");
                 const obj = itemToObject(item);
 
                 expect(obj).to.eql({
