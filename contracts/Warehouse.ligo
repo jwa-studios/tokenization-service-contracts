@@ -19,7 +19,12 @@ type return is list (operation) * storage
 
 function add (var item: item_metadata; var storage: storage): return is
     block {
-        storage.warehouse := Big_map.add(item.item_id, item, storage.warehouse)
+        const foundItem: option(item_metadata) = storage.warehouse [item.item_id];
+
+        case foundItem of
+            | None -> storage.warehouse := Big_map.add(item.item_id, item, storage.warehouse)
+            | Some (i) -> failwith("ITEM_ID_ALREADY_EXISTS")
+        end
     } with ((nil: list (operation)), storage)
 
 function update (const item: item_metadata; var storage: storage): return is

@@ -1,5 +1,5 @@
 const Warehouse = artifacts.require("Warehouse");
-const { MichelsonMap } = require("@taquito/taquito");
+const { MichelsonMap, TezosOperationError } = require("@taquito/taquito");
 
 contract("Given Warehouse is deployed", () => {
     let warehouseInstance;
@@ -51,6 +51,25 @@ contract("Given Warehouse is deployed", () => {
                 quantity: 10
             })
         });
+
+        describe("When adding an item with the same item ID", () => {
+            it("Then fails with an explicit error", async () => {
+                try {
+                    await warehouseInstance.add_item(
+                        MichelsonMap.fromLiteral({
+                            XP: "97"
+                        }),
+                        0,
+                        10
+                    )
+
+                    console.error("Will fail: Add_Item should throw an Error if Warehouse already possesses an item with the same ID");
+                    expect.fail("Add Item should throw an Error if Warehouse already possesses an item with the same ID")
+                } catch (err) {
+                    expect(err.message).to.equal("ITEM_ID_ALREADY_EXISTS")
+                }
+            })
+        })
 
         describe("When updating the item", () => {
             before(async () => {
