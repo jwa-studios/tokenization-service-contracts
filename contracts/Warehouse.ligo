@@ -52,10 +52,10 @@ function update (const item: item_metadata; var storage: storage): return is
                     }
                 }
                 end;
+
+                storage.warehouse := Big_map.update(item.item_id, Some(item), storage.warehouse);
         }
         end;
-
-        storage.warehouse := Big_map.update(item.item_id, Some(item), storage.warehouse);
     } with ((nil: list (operation)), storage)
 
 function freeze (const id: nat; var storage: storage): return is
@@ -65,6 +65,19 @@ function freeze (const id: nat; var storage: storage): return is
         case found_item of 
             None -> failwith("ITEM_ID_DOESNT_EXIST")
         |   Some (i) -> {
+                const no_update_after : option (timestamp) = i.no_update_after;
+
+                case no_update_after of
+                    None -> skip
+                |   Some(t) -> {
+                    if Tezos.now >= t then {
+                        failwith("ITEM_IS_FROZEN");
+                    } else {
+                        skip;
+                    }
+                }
+                end;
+
                 i.no_update_after := Some(Tezos.now);
                 storage.warehouse := Big_map.update(i.item_id, Some(i), storage.warehouse);
         }

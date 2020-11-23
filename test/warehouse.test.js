@@ -72,7 +72,7 @@ contract("Given Warehouse is deployed", () => {
                     expect(err.message).to.equal("ITEM_ID_ALREADY_EXISTS")
                 }
             });
-        })
+        });
 
         describe("When updating the item", () => {
             before(async () => {
@@ -100,6 +100,26 @@ contract("Given Warehouse is deployed", () => {
                     no_update_after: undefined,
                     quantity: 100
                 });
+            });
+        });
+
+        describe("When updating an item that doesn't exist", () => {
+            it("Then fails with an explicit error", async () => {
+                try {
+                    await warehouseInstance.update_item(
+                        MichelsonMap.fromLiteral({
+                            XP: "97"
+                        }),
+                        1234,
+                        undefined,
+                        10
+                    )
+
+                    console.error("Will fail: Update_Item should throw an Error if Warehouse doesn't possess an item with this ID");
+                    expect.fail("Add Item should throw an Error if Warehouse doesn't possess an item with this ID")
+                } catch (err) {
+                    expect(err.message).to.equal("ITEM_ID_DOESNT_EXIST")
+                }
             });
         });
     });
@@ -225,7 +245,7 @@ contract("Given Warehouse is deployed", () => {
         describe("And when I freeze it", () => {
             before(async () => {
                 await warehouseInstance.freeze_item(200)
-            })
+            });
 
             it("Then doesn't allow me to update it anymore", async () => {
                 try {
@@ -243,8 +263,21 @@ contract("Given Warehouse is deployed", () => {
                 } catch (err) {
                     expect(err.message).to.equal("ITEM_IS_FROZEN")
                 }
-            })
-        })
+            });
+
+            describe("When freezing an item that is already frozen", () => {
+                it("Then fails with an explicit error", async () => {
+                    try {
+                        await warehouseInstance.freeze_item(200)
+    
+                        console.error("Will fail: Freeze_Item should throw an Error if item is already frozen as it should be immutable");
+                        expect.fail("Freeze Item should throw an Error if item is already frozen as it should be immutable")
+                    } catch (err) {
+                        expect(err.message).to.equal("ITEM_IS_FROZEN")
+                    }
+                });
+            });
+        });
     });
 })
 
