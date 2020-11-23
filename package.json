@@ -10,7 +10,7 @@
     "truffle": "^5.5.0-tezos.4"
   },
   "scripts": {
-    "start-sandbox": "ganache-cli --flavor tezos --seed alice"
+    "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")"
   },
   "repository": {
     "type": "git",

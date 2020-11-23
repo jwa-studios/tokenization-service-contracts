@@ -1,5 +1,5 @@
 const Warehouse = artifacts.require("Warehouse");
-const { MichelsonMap, TezosOperationError } = require("@taquito/taquito");
+const { MichelsonMap } = require("@taquito/taquito");
 
 contract("Given Warehouse is deployed", () => {
     let warehouseInstance;
@@ -33,6 +33,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 }),
                 0,
+                undefined,
                 10
             )
 
@@ -48,6 +49,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 },
                 item_id: 0,
+                no_update_after: undefined,
                 quantity: 10
             })
         });
@@ -60,6 +62,7 @@ contract("Given Warehouse is deployed", () => {
                             XP: "97"
                         }),
                         0,
+                        undefined,
                         10
                     )
 
@@ -68,7 +71,7 @@ contract("Given Warehouse is deployed", () => {
                 } catch (err) {
                     expect(err.message).to.equal("ITEM_ID_ALREADY_EXISTS")
                 }
-            })
+            });
         })
 
         describe("When updating the item", () => {
@@ -79,6 +82,7 @@ contract("Given Warehouse is deployed", () => {
                         CLUB: "JUVE"
                     }),
                     0,
+                    undefined,
                     100
                 )
             });
@@ -93,17 +97,143 @@ contract("Given Warehouse is deployed", () => {
                         CLUB: "JUVE"
                     },
                     item_id: 0,
+                    no_update_after: undefined,
                     quantity: 100
                 });
             });
-        })
+        });
+    });
+
+    describe("When adding a new item without time left for modifications", () => {
+        let storage;
+        let noUpdateAfter;
+
+        before(async () => {
+            const pastDate = new Date()
+            pastDate.setHours(pastDate.getHours() - 1)
+            noUpdateAfter = getISODateNoMs(pastDate)
+
+            await warehouseInstance.add_item(
+                MichelsonMap.fromLiteral({
+                    XP: "97"
+                }),
+                100,
+                noUpdateAfter,
+                10
+            )
+
+            storage = await warehouseInstance.storage();
+        });
+
+        it("Then has a matching `no_update_after` timestamp", async () => {
+            const item = await storage.warehouse.get("100");
+            const obj = itemToObject(item);
+
+            expect(obj).to.eql({
+                data: {
+                    XP: "97"
+                },
+                item_id: 100,
+                no_update_after: noUpdateAfter,
+                quantity: 10
+            });
+        });
+
+        it("Then may not be modified anymore", async () => {
+            try {
+                await warehouseInstance.update_item(
+                    MichelsonMap.fromLiteral({
+                        XP: "98"
+                    }),
+                    100,
+                    undefined,
+                    10
+                )
+
+                console.error("Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past");
+                expect.fail("Update_Item should throw an Error if the items `no_update_after` timestamp is in the past")
+            } catch (err) {
+                expect(err.message).to.equal("ITEM_IS_FROZEN")
+            }
+        });
+    });
+
+    describe("When adding a new item with time left for modifications", () => {
+        let storage;
+        let noUpdateAfter;
+
+        before(async () => {
+            const futureDate = new Date()
+            futureDate.setHours(futureDate.getHours() + 1)
+            noUpdateAfter = getISODateNoMs(futureDate)
+
+            await warehouseInstance.add_item(
+                MichelsonMap.fromLiteral({
+                    XP: "97"
+                }),
+                200,
+                noUpdateAfter,
+                10
+            )
+
+            storage = await warehouseInstance.storage();
+        });
+
+        it("Then has a matching `no_update_after` timestamp", async () => {
+            const item = await storage.warehouse.get("200");
+            const obj = itemToObject(item);
+
+            expect(obj).to.eql({
+                data: {
+                    XP: "97"
+                },
+                item_id: 200,
+                no_update_after: noUpdateAfter,
+                quantity: 10
+            });
+        });
+
+        describe("And when I modify it again", () => {
+            before(async () => {
+                await warehouseInstance.update_item(
+                    MichelsonMap.fromLiteral({
+                        XP: "98"
+                    }),
+                    200,
+                    noUpdateAfter,
+                    10
+                )
+
+                storage = await warehouseInstance.storage();
+            });
+
+            it("Then allows me to update it", async () => {
+                const item = await storage.warehouse.get("200");
+                const obj = itemToObject(item);
+    
+                expect(obj).to.eql({
+                    data: {
+                        XP: "98"
+                    },
+                    item_id: 200,
+                    no_update_after: noUpdateAfter,
+                    quantity: 10
+                });
+            })
+        });
     });
 })
 
 function itemToObject(item) {
     return {
+        no_update_after: item.no_update_after ? getISODateNoMs(new Date(item.no_update_after)) : undefined,
         item_id: item.item_id.toNumber(),
         quantity: item.quantity.toNumber(),
         data: Object.fromEntries(item.data.entries())
     };
+}
+
+function getISODateNoMs(date = new Date()) {
+    date.setMilliseconds(0);
+    return date.toISOString();
 }
