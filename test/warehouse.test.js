@@ -221,6 +221,30 @@ contract("Given Warehouse is deployed", () => {
                 });
             })
         });
+
+        describe("And when I freeze it", () => {
+            before(async () => {
+                await warehouseInstance.freeze_item(200)
+            })
+
+            it("Then doesn't allow me to update it anymore", async () => {
+                try {
+                    await warehouseInstance.update_item(
+                        MichelsonMap.fromLiteral({
+                            XP: "99"
+                        }),
+                        200,
+                        undefined,
+                        10
+                    )
+    
+                    console.error("Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past");
+                    expect.fail("Update_Item should throw an Error if the items `no_update_after` timestamp is in the past")
+                } catch (err) {
+                    expect(err.message).to.equal("ITEM_IS_FROZEN")
+                }
+            })
+        })
     });
 })
 
