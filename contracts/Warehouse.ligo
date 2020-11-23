@@ -2,12 +2,8 @@
 type item_metadata is record [
     data: map (string, string);
     item_id : nat;
-    // item_type: string;
     no_update_after: option (timestamp);
-    // originator: string;
-    // origination_date: timestamp;
     quantity: nat;
-    // version: string;
 ]
 
 type parameter is 
