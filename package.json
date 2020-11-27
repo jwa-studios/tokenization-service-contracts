@@ -1,33 +1,37 @@
 {
-  "name": "tokenization-service-contracts",
-  "version": "0.0.2",
-  "private": true,
-  "description": "Tokenization Service's Smart Contracts",
-  "dependencies": {},
-  "devDependencies": {
-    "@taquito/taquito": "^7.0.0-beta.0",
-    "ganache-cli": "^6.10.0-tezos.1",
-    "truffle": "^5.5.0-tezos.4"
-  },
-  "scripts": {
-    "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jwa-studios/tokenization-service-contracts.git"
-  },
-  "keywords": [
-    "ligo",
-    "tezos",
-    "smart",
-    "contracts",
-    "tokenization",
-    "service"
-  ],
-  "author": "JWA Studios SA",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jwa-studios/tokenization-service-contracts/issues"
-  },
-  "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme"
+    "name": "tokenization-service-contracts",
+    "version": "0.0.2",
+    "private": true,
+    "description": "Tokenization Service's Smart Contracts",
+    "dependencies": {},
+    "devDependencies": {
+        "@taquito/taquito": "^7.0.0-beta.0",
+        "ganache-cli": "^6.10.0-tezos.1",
+        "prettier": "2.2.0",
+        "truffle": "^5.5.0-tezos.4"
+    },
+    "scripts": {
+        "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")",
+        "lint": "prettier --check .",
+        "lint-fix": "prettier --write .",
+        "test": "truffle test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jwa-studios/tokenization-service-contracts.git"
+    },
+    "keywords": [
+        "ligo",
+        "tezos",
+        "smart",
+        "contracts",
+        "tokenization",
+        "service"
+    ],
+    "author": "JWA Studios SA",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/jwa-studios/tokenization-service-contracts/issues"
+    },
+    "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme"
 }

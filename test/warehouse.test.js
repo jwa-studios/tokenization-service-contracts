@@ -8,7 +8,7 @@ contract("Given Warehouse is deployed", () => {
         warehouseInstance = await Warehouse.deployed();
     });
 
-    describe('When getting the storage', () => {
+    describe("When getting the storage", () => {
         let storage;
 
         before(async () => {
@@ -20,9 +20,11 @@ contract("Given Warehouse is deployed", () => {
         });
 
         it("Then returns the owner", () => {
-            expect(storage.owner).to.equal("tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb");
+            expect(storage.owner).to.equal(
+                "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"
+            );
         });
-    })
+    });
 
     describe("When adding a new item", () => {
         let storage;
@@ -66,8 +68,12 @@ contract("Given Warehouse is deployed", () => {
                         10
                     );
 
-                    console.error("Will fail: Add_Item should throw an Error if Warehouse already possesses an item with the same ID");
-                    expect.fail("Add Item should throw an Error if Warehouse already possesses an item with the same ID");
+                    console.error(
+                        "Will fail: Add_Item should throw an Error if Warehouse already possesses an item with the same ID"
+                    );
+                    expect.fail(
+                        "Add Item should throw an Error if Warehouse already possesses an item with the same ID"
+                    );
                 } catch (err) {
                     expect(err.message).to.equal("ITEM_ID_ALREADY_EXISTS");
                 }
@@ -115,8 +121,12 @@ contract("Given Warehouse is deployed", () => {
                         10
                     );
 
-                    console.error("Will fail: Update_Item should throw an Error if Warehouse doesn't possess an item with this ID");
-                    expect.fail("Add Item should throw an Error if Warehouse doesn't possess an item with this ID");
+                    console.error(
+                        "Will fail: Update_Item should throw an Error if Warehouse doesn't possess an item with this ID"
+                    );
+                    expect.fail(
+                        "Add Item should throw an Error if Warehouse doesn't possess an item with this ID"
+                    );
                 } catch (err) {
                     expect(err.message).to.equal("ITEM_ID_DOESNT_EXIST");
                 }
@@ -129,7 +139,7 @@ contract("Given Warehouse is deployed", () => {
         let noUpdateAfter;
 
         before(async () => {
-            const pastDate = new Date()
+            const pastDate = new Date();
             pastDate.setHours(pastDate.getHours() - 1);
             noUpdateAfter = getISODateNoMs(pastDate);
 
@@ -168,10 +178,14 @@ contract("Given Warehouse is deployed", () => {
                     100,
                     undefined,
                     10
-                )
+                );
 
-                console.error("Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past");
-                expect.fail("Update_Item should throw an Error if the items `no_update_after` timestamp is in the past");
+                console.error(
+                    "Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
+                );
+                expect.fail(
+                    "Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
+                );
             } catch (err) {
                 expect(err.message).to.equal("ITEM_IS_FROZEN");
             }
@@ -183,9 +197,9 @@ contract("Given Warehouse is deployed", () => {
         let noUpdateAfter;
 
         before(async () => {
-            const futureDate = new Date()
-            futureDate.setHours(futureDate.getHours() + 1)
-            noUpdateAfter = getISODateNoMs(futureDate)
+            const futureDate = new Date();
+            futureDate.setHours(futureDate.getHours() + 1);
+            noUpdateAfter = getISODateNoMs(futureDate);
 
             await warehouseInstance.add_item(
                 MichelsonMap.fromLiteral({
@@ -194,7 +208,7 @@ contract("Given Warehouse is deployed", () => {
                 200,
                 noUpdateAfter,
                 10
-            )
+            );
 
             storage = await warehouseInstance.storage();
         });
@@ -222,7 +236,7 @@ contract("Given Warehouse is deployed", () => {
                     200,
                     noUpdateAfter,
                     10
-                )
+                );
 
                 storage = await warehouseInstance.storage();
             });
@@ -230,7 +244,7 @@ contract("Given Warehouse is deployed", () => {
             it("Then allows me to update it", async () => {
                 const item = await storage.warehouse.get("200");
                 const obj = itemToObject(item);
-    
+
                 expect(obj).to.eql({
                     data: {
                         XP: "98"
@@ -244,7 +258,7 @@ contract("Given Warehouse is deployed", () => {
 
         describe("And when I freeze it", () => {
             before(async () => {
-                await warehouseInstance.freeze_item(200)
+                await warehouseInstance.freeze_item(200);
             });
 
             it("Then doesn't allow me to update it anymore", async () => {
@@ -256,34 +270,44 @@ contract("Given Warehouse is deployed", () => {
                         200,
                         undefined,
                         10
-                    )
-    
-                    console.error("Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past");
-                    expect.fail("Update_Item should throw an Error if the items `no_update_after` timestamp is in the past")
+                    );
+
+                    console.error(
+                        "Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
+                    );
+                    expect.fail(
+                        "Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
+                    );
                 } catch (err) {
-                    expect(err.message).to.equal("ITEM_IS_FROZEN")
+                    expect(err.message).to.equal("ITEM_IS_FROZEN");
                 }
             });
 
             describe("When freezing an item that is already frozen", () => {
                 it("Then fails with an explicit error", async () => {
                     try {
-                        await warehouseInstance.freeze_item(200)
-    
-                        console.error("Will fail: Freeze_Item should throw an Error if item is already frozen as it should be immutable");
-                        expect.fail("Freeze Item should throw an Error if item is already frozen as it should be immutable")
+                        await warehouseInstance.freeze_item(200);
+
+                        console.error(
+                            "Will fail: Freeze_Item should throw an Error if item is already frozen as it should be immutable"
+                        );
+                        expect.fail(
+                            "Freeze Item should throw an Error if item is already frozen as it should be immutable"
+                        );
                     } catch (err) {
-                        expect(err.message).to.equal("ITEM_IS_FROZEN")
+                        expect(err.message).to.equal("ITEM_IS_FROZEN");
                     }
                 });
             });
         });
     });
-})
+});
 
 function itemToObject(item) {
     return {
-        no_update_after: item.no_update_after ? getISODateNoMs(new Date(item.no_update_after)) : undefined,
+        no_update_after: item.no_update_after
+            ? getISODateNoMs(new Date(item.no_update_after))
+            : undefined,
         item_id: item.item_id.toNumber(),
         quantity: item.quantity.toNumber(),
         data: Object.fromEntries(item.data.entries())

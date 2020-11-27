@@ -1,6 +1,6 @@
 # Tokenization Service Contracts
 
-The Tokenization Service's Smart Contracts. 
+The Tokenization Service's Smart Contracts.
 There are mostly 2 contracts:
 
 1. The Warehouse, which contains all tokenized items, including their full description and quantities.
