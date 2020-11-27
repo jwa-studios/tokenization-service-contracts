@@ -1,0 +1,24 @@
+version: 2.1
+orbs:
+    node: circleci/node@4.1.0
+jobs:
+    lint:
+        executor: node/default
+        steps:
+            - checkout
+            - run: npm install
+            - run: npm run lint
+    test:
+        machine:
+            image: ubuntu-2004:202010-01
+        steps:
+            - checkout
+            - run: npm install
+            # should be using npm run start-sandbox but Delpha currently deosn't start
+            - run: docker run -d -p 20000:20000 tqtezos/flextesa:20200925 delphibox start
+            - run: npx truffle test --network minilab
+workflows:
+    tests:
+        jobs:
+            - lint
+            - test
