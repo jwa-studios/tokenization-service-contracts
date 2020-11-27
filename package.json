@@ -1,29 +1,33 @@
 {
   "name": "tokenization-service-contracts",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "private": true,
   "description": "Tokenization Service's Smart Contracts",
+  "dependencies": {},
+  "devDependencies": {
+    "@taquito/taquito": "^7.0.0-beta.0",
+    "ganache-cli": "^6.10.0-tezos.1",
+    "truffle": "^5.5.0-tezos.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jwa-studios/tokenization-service-contracts.git"
   },
   "keywords": [
-    "fa2",
+    "ligo",
     "tezos",
     "smart",
     "contracts",
     "tokenization",
     "service"
   ],
-  "author": "JWA Studios",
+  "author": "JWA Studios SA",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jwa-studios/tokenization-service-contracts/issues"
   },
-  "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
-  "dependencies": {
-    "truffle": "^5.5.0-tezos.4"
-  }
+  "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme"
 }
