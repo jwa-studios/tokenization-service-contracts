@@ -11,6 +11,13 @@ module.exports = {
             secretKey: alice.sk,
             type: "tezos"
         },
+        minilab: {
+            host: "http://localhost",
+            port: 20000,
+            network_id: "*",
+            secretKey: alice.sk,
+            type: "tezos"
+        },
         carthagenet: {
             host: "https://carthagenet.smartpy.io",
             port: 443,
