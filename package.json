@@ -29,8 +29,8 @@
         "tokenization",
         "service"
     ],
-    "author": "JWA Studios SA",
-    "license": "MIT",
+    "author": "JWA Lab",
+    "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/jwa-studios/tokenization-service-contracts/issues"
     },
