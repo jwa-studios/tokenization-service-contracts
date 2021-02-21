@@ -6,28 +6,85 @@ There are mostly 2 contracts:
 1. The Warehouse, which contains all tokenized items, including their full description and quantities.
 2. The Ledger, which retraces important historical information of a given item and their owners.
 
-## Requirements
+## How to use the smart contracts:
+
+1. Install the tokenization service contracts:
+
+```
+npm install @jwalab/tokenization-service-contracts
+```
+
+2. Deploy them with Taquito:
+
+Example deploying the warehouse contract:
+
+```
+const { TezosToolkit, MichelsonMap } = require('@taquito/taquito');
+const { InMemorySigner } = require('@taquito/signer');
+
+const tokenizationServiceContracts = require('@jwalab/tokenization-service-contracts');
+
+// using truffle's default accounts
+// An account looks like this:
+// alice: {
+//      pkh: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+//      sk: "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq",
+//      pk: "edpkvGfYw3LyB1UcCahKQk4rF2tvbMUk8GFiTuMjL75uGXrpvKXhjn"
+// }
+const accounts = require('./path/to/accounts');
+
+const Tezos = new TezosToolkit();
+
+Tezos.setProvider({
+    rpc: 'http://localhost:20000',
+    signer: new InMemorySigner(accounts.alice.sk)
+})
+
+Tezos.contract
+  .originate({
+    code: tokenizationServiceContracts.warehouse.michelson,
+    storage: {
+        owner: accounts.alice.pkh,
+        version: "1",
+        warehouse: MichelsonMap.fromLiteral({})
+    },
+  })
+  .then((originationOp) => {
+    console.log(`Waiting for confirmation of origination for ${originationOp.contractAddress}`);
+    return originationOp.contract(1, 1);
+  })
+  .then(() => {
+    console.log(`Origination completed.`);
+  })
+  .catch((error) => console.log(error));
+```
+
+### Smart Contract APIs
+
+Our Smart Contracts are fully tested, please look at the `./test` folder to see how they work and how to configure their storage.
+
+## Development
+
+### Requirements
 
 1. Items created in the Warehouse are truly immutable, their characteristics may never be altered. Just like a manufactured product once manufactured can't be altered. If a faulty item is minted, it must be discarded or sold as-is, or minted again.
 2. Items in the Warehouse don't belong to anyone and can't be transferred. Items in the Warehouse are not owned, only linked to an originator.
 3. Items in the Warehouse are semi-fungible. If an item is created with a quantity of 1000, all 1000 items have the same value and can be exchanged without destruction of value.
-4. When an item in the Warehouse is purchased, its new owner is recorded in the Ledge. The Warehouse item remains unaltered, its total quantity remains unaltered, but there's one fewer item left to be purchased. The Ledger records the new owner but has a unique reference to the Warehouse item so the Warehouse item isn't duplicated. Since the Warehouse item is truly immutable and is globally uniquely identified, there's no need to duplicate it.
-5. When an item owner alters an item they have purchased, the changes are recorded in the Ledger. Only the delta between the purchased token and the original one in the Warehouse is recorded in the Ledger.
-6. An item can be transferred between compatible ledgers. An item may be partially or completely transferred from one ledger to another.
-7. Actually it's not true, an item in the Warehouse can be modified until the `no_update_after` timestamp is in the past. We call it an expiration date as it prevents items from being modified after that date. We say that when the item can't be modified anymore, it's frozen. An item can be frozen quickly by calling the appropriate entrypoint. Until the expiration date is reached, the date can be removed or pushed further in the future.
+4. When an item in the Warehouse is purchased, its new owner will have a Ledger created and the item will be added to that Ledger as a mutable copy of the original item. The Warehouse item remains unaltered, its total quantity remains unaltered, but there's one fewer item left to be purchased.
+5. When an item owner alters an item they have purchased, the changes are recorded in the Ledger. The item there is simply mutated. Since all mutations are recorded as an entrypoint call, we can recreate an audit trail of changes.
+6. An item can be transferred between compatible ledgers. Only the originator of the contract is able to initiate a transfer and only the owner of the Warehouse contract is able to mutate objects in a Ledger.
+7. One more thing, an item in the Warehouse can be modified until the `no_update_after` timestamp is in the past. We call it an expiration date as it prevents items from being modified after that date. We say that when the item can't be modified anymore, it's frozen. An item can be frozen quickly by calling the appropriate entrypoint. Until the expiration date is reached, the date can be removed or pushed further in the future.
 
-## Project Structure
+### Project Structure
 
 The Tezos contracts are written in the `./contracts` folder.
 
-## Getting Started
-
-Ensure you have truffle@tezos
+### Getting Started
 
 1. Start by cloning this repository
 1. run `npm install` in this folder
 
-### Test the contracts
+#### Test the contracts using the built-in sandbox
 
 Start the sandbox first:
 
@@ -41,8 +98,19 @@ Then run the tests:
 npx truffle test
 ```
 
-### Deploy to specified network:
+#### Test the contracts using minilab
 
 ```
-npx truffle migrate --network development
+npm install -g @jwalab/minilab
+minilab start
+```
+
+```
+npx truffle test --network minilab
+```
+
+#### Manually deploy the contracts
+
+```
+npx truffle migrate --network minilab
 ```
