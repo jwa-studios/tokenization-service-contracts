@@ -1,9 +1,10 @@
 {
     "name": "@jwalab/tokenization-service-contracts",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "files": [
         "index.js",
-        "dist"
+        "dist",
+        "typings"
     ],
     "description": "Tokenization Service's Smart Contracts",
     "devDependencies": {
@@ -34,6 +35,7 @@
         "tokenization",
         "service"
     ],
+    "types": "typings/index.d.ts",
     "author": "JWA Lab",
     "license": "Apache-2.0",
     "bugs": {
