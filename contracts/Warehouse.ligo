@@ -2,6 +2,7 @@
 type item_metadata is record [
     data: map (string, string);
     item_id : nat;
+    name: string;
     no_update_after: option (timestamp);
     quantity: nat;
 ]
