@@ -35,6 +35,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 }),
                 0,
+                "Christiano Ronaldo",
                 undefined,
                 10
             );
@@ -51,6 +52,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 },
                 item_id: 0,
+                name: "Christiano Ronaldo",
                 no_update_after: undefined,
                 quantity: 10
             });
@@ -64,6 +66,7 @@ contract("Given Warehouse is deployed", () => {
                             XP: "97"
                         }),
                         0,
+                        "Christiano Ronaldo",
                         undefined,
                         10
                     );
@@ -88,6 +91,7 @@ contract("Given Warehouse is deployed", () => {
                         CLUB: "JUVE"
                     }),
                     0,
+                    "Christiano Ronaldo",
                     undefined,
                     100
                 );
@@ -103,6 +107,7 @@ contract("Given Warehouse is deployed", () => {
                         CLUB: "JUVE"
                     },
                     item_id: 0,
+                    name: "Christiano Ronaldo",
                     no_update_after: undefined,
                     quantity: 100
                 });
@@ -117,6 +122,7 @@ contract("Given Warehouse is deployed", () => {
                             XP: "97"
                         }),
                         1234,
+                        "Christiano Ronaldo",
                         undefined,
                         10
                     );
@@ -148,6 +154,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 }),
                 100,
+                "Christiano Ronaldo",
                 noUpdateAfter,
                 10
             );
@@ -164,6 +171,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 },
                 item_id: 100,
+                name: "Christiano Ronaldo",
                 no_update_after: noUpdateAfter,
                 quantity: 10
             });
@@ -176,6 +184,7 @@ contract("Given Warehouse is deployed", () => {
                         XP: "98"
                     }),
                     100,
+                    "Christiano Ronaldo",
                     undefined,
                     10
                 );
@@ -206,6 +215,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 }),
                 200,
+                "Christiano Ronaldo",
                 noUpdateAfter,
                 10
             );
@@ -222,6 +232,7 @@ contract("Given Warehouse is deployed", () => {
                     XP: "97"
                 },
                 item_id: 200,
+                name: "Christiano Ronaldo",
                 no_update_after: noUpdateAfter,
                 quantity: 10
             });
@@ -234,6 +245,7 @@ contract("Given Warehouse is deployed", () => {
                         XP: "98"
                     }),
                     200,
+                    "Christiano Ronaldo",
                     noUpdateAfter,
                     10
                 );
@@ -250,6 +262,7 @@ contract("Given Warehouse is deployed", () => {
                         XP: "98"
                     },
                     item_id: 200,
+                    name: "Christiano Ronaldo",
                     no_update_after: noUpdateAfter,
                     quantity: 10
                 });
@@ -268,6 +281,7 @@ contract("Given Warehouse is deployed", () => {
                             XP: "99"
                         }),
                         200,
+                        "Christiano Ronaldo",
                         undefined,
                         10
                     );
@@ -309,6 +323,7 @@ function itemToObject(item) {
             ? getISODateNoMs(new Date(item.no_update_after))
             : undefined,
         item_id: item.item_id.toNumber(),
+        name: item.name,
         quantity: item.quantity.toNumber(),
         data: Object.fromEntries(item.data.entries())
     };
