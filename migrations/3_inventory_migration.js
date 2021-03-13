@@ -1,13 +1,13 @@
-const Warehouse = artifacts.require("Warehouse");
+const Inventory = artifacts.require("Inventory");
 const { MichelsonMap } = require("@taquito/taquito");
 
 module.exports = async (deployer, _, accounts) => {
     deployer.deploy(
-        Warehouse,
+        Inventory,
         {
+            originator: accounts[0],
             owner: accounts[0],
-            version: "1",
-            warehouse: MichelsonMap.fromLiteral({})
+            inventory: MichelsonMap.fromLiteral({})
         },
         accounts[0],
         {

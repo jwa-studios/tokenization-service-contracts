@@ -1,4 +1,3 @@
-
 type item_metadata is record [
     data: map (string, string);
     item_id : nat;
