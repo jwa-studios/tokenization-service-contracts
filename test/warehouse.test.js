@@ -31,6 +31,7 @@ contract("Given Warehouse is deployed", () => {
 
         before(async () => {
             await warehouseInstance.add_item(
+                10,
                 MichelsonMap.fromLiteral({
                     XP: "97"
                 }),
@@ -48,13 +49,14 @@ contract("Given Warehouse is deployed", () => {
             const obj = itemToObject(item);
 
             expect(obj).to.deep.eql({
+                available_quantity: 10,
                 data: {
                     XP: "97"
                 },
                 item_id: 0,
                 name: "Christiano Ronaldo",
                 no_update_after: undefined,
-                quantity: 10
+                total_quantity: 10
             });
         });
 
@@ -62,6 +64,7 @@ contract("Given Warehouse is deployed", () => {
             it("Then fails with an explicit error", async () => {
                 try {
                     await warehouseInstance.add_item(
+                        10,
                         MichelsonMap.fromLiteral({
                             XP: "97"
                         }),
@@ -86,6 +89,7 @@ contract("Given Warehouse is deployed", () => {
         describe("When updating the item", () => {
             before(async () => {
                 await warehouseInstance.update_item(
+                    100,
                     MichelsonMap.fromLiteral({
                         XP: "98",
                         CLUB: "JUVE"
@@ -102,6 +106,7 @@ contract("Given Warehouse is deployed", () => {
                 const obj = itemToObject(item);
 
                 expect(obj).to.eql({
+                    available_quantity: 100,
                     data: {
                         XP: "98",
                         CLUB: "JUVE"
@@ -109,7 +114,7 @@ contract("Given Warehouse is deployed", () => {
                     item_id: 0,
                     name: "Christiano Ronaldo",
                     no_update_after: undefined,
-                    quantity: 100
+                    total_quantity: 100
                 });
             });
         });
@@ -118,6 +123,7 @@ contract("Given Warehouse is deployed", () => {
             it("Then fails with an explicit error", async () => {
                 try {
                     await warehouseInstance.update_item(
+                        10,
                         MichelsonMap.fromLiteral({
                             XP: "97"
                         }),
@@ -150,6 +156,7 @@ contract("Given Warehouse is deployed", () => {
             noUpdateAfter = getISODateNoMs(pastDate);
 
             await warehouseInstance.add_item(
+                10,
                 MichelsonMap.fromLiteral({
                     XP: "97"
                 }),
@@ -167,19 +174,21 @@ contract("Given Warehouse is deployed", () => {
             const obj = itemToObject(item);
 
             expect(obj).to.eql({
+                available_quantity: 10,
                 data: {
                     XP: "97"
                 },
                 item_id: 100,
                 name: "Christiano Ronaldo",
                 no_update_after: noUpdateAfter,
-                quantity: 10
+                total_quantity: 10
             });
         });
 
         it("Then may not be modified anymore", async () => {
             try {
                 await warehouseInstance.update_item(
+                    10,
                     MichelsonMap.fromLiteral({
                         XP: "98"
                     }),
@@ -211,6 +220,7 @@ contract("Given Warehouse is deployed", () => {
             noUpdateAfter = getISODateNoMs(futureDate);
 
             await warehouseInstance.add_item(
+                10,
                 MichelsonMap.fromLiteral({
                     XP: "97"
                 }),
@@ -228,19 +238,21 @@ contract("Given Warehouse is deployed", () => {
             const obj = itemToObject(item);
 
             expect(obj).to.eql({
+                available_quantity: 10,
                 data: {
                     XP: "97"
                 },
                 item_id: 200,
                 name: "Christiano Ronaldo",
                 no_update_after: noUpdateAfter,
-                quantity: 10
+                total_quantity: 10
             });
         });
 
         describe("And when I modify it again", () => {
             before(async () => {
                 await warehouseInstance.update_item(
+                    10,
                     MichelsonMap.fromLiteral({
                         XP: "98"
                     }),
@@ -258,13 +270,14 @@ contract("Given Warehouse is deployed", () => {
                 const obj = itemToObject(item);
 
                 expect(obj).to.eql({
+                    available_quantity: 10,
                     data: {
                         XP: "98"
                     },
                     item_id: 200,
                     name: "Christiano Ronaldo",
                     no_update_after: noUpdateAfter,
-                    quantity: 10
+                    total_quantity: 10
                 });
             });
         });
@@ -277,6 +290,7 @@ contract("Given Warehouse is deployed", () => {
             it("Then doesn't allow me to update it anymore", async () => {
                 try {
                     await warehouseInstance.update_item(
+                        10,
                         MichelsonMap.fromLiteral({
                             XP: "99"
                         }),
@@ -324,7 +338,8 @@ function itemToObject(item) {
             : undefined,
         item_id: item.item_id.toNumber(),
         name: item.name,
-        quantity: item.quantity.toNumber(),
+        total_quantity: item.total_quantity.toNumber(),
+        available_quantity: item.available_quantity.toNumber(),
         data: Object.fromEntries(item.data.entries())
     };
 }
