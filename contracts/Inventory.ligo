@@ -13,28 +13,36 @@ type item_data is record [
 
 //items : map ===> key : instance de l'item - value : map item_data
 // map regroupant toutes les instances d'un même item (id similaire) avec comme index son numéro d'instance
-type item_instance record [
-    items : map(nat, item_data)
-]
+type item_instance is map(nat, item_data)
 
 // STORAGE -> contient un tableau d'item selon leur id
 // exemple : toutes les cartes CR7 seront enregistrées dans la map item_instance stockée dans la big_map storage, avec le même index qui correspond ä l'id de l'item
-type storage is record [
+type inventory is record [
     //inventory : big_map ===> key : id de l'item - value : map items
-    inventory: big_map (nat, item_instance);
+    store: big_map (nat, item_instance);
 ]
 
-type parameter is
-    Assign_item of nat
+type parameter is record [
+    item_id: nat;
+    instance_number: nat;
+    data: item_data;
+]
+type return is list (operation) * inventory;
 
-type return is list (operation) * storage;
-
-const empty_item_data: item_data = record [
-    data = (map []: map (string, string));
-];
-
-function assign (const id: nat; const instanceNumber: nat; const itemData: item_data): return is
+//paramètres d'une fonction : 2 -> 1 paramètre et un storage
+function assign (const params: parameter; const storage: inventory): return is
     block {
+        const instances_map: option (item_instance) = storage.store[params.item_id];
+        case instances_map of
+            None -> block {
+                const new_instances_map : item_instance = map [params.instance_number -> params.data];
+                storage.store := Big_map.add(params.item_id, new_instances_map, storage.store)
+            }
+            | Some(im) -> block {
+                im := Map.add(params.instance_number, params.data, im);
+                storage.store := Big_map.add(params.item_id, im, storage.store)
+            }
+        end;
 
         //SI le storage contient déjà une instance avec l'id envoyé en paramètres,
 
@@ -48,7 +56,3 @@ function assign (const id: nat; const instanceNumber: nat; const itemData: item_
 
                 // on ajoute l'instance dans la nouvelle map crée avec comme index instanceNumber
     } with ((nil: list (operation)), storage)
-
-function main (const action : parameter; const storage : storage): return is case action of
-        Assign_item (i) -> assign(i, storage)
-    end
