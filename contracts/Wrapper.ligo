@@ -29,19 +29,13 @@ function retrieve (const item_id: nat; var storage: storage): return is
         |   Some (i) -> {
                 const available_quantity : nat = i.available_quantity;
 
-                case available_quantity of
-                    None -> skip
-                |   Some(t) -> {
-                    if i.available_quantity = 0 then {
-                        failwith("NO_AVAILABE_ITEM");
-                    } else {
-                        skip;
-                    }
-                }
-                end;
-
-                i.available_quantity := i.available_quantity - 1;
-                storage.wrapper := Big_map.update(i.item_id, Some(i), storage.wrapper);
+                
+                if i.available_quantity = 0n then {
+                    failwith("NO_AVAILABE_ITEM");
+                } else {
+                    i.available_quantity := i.available_quantity - 1n;
+                    storage.wrapper := Big_map.update(i.item_id, Some(i), storage.wrapper);
+                }  
         }
         end;
     } with ((nil: list (operation)), storage)
