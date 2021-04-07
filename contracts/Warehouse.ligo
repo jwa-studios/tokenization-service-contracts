@@ -18,9 +18,9 @@ type storage is record [
     warehouse: big_map (nat, item_metadata);
 ]
 
-[@inline] const ignore_item_metadata = [%Michelson ({| {DROP;UNIT} |} : item_metadata -> unit)]
-
 type return is list (operation) * storage;
+
+[@inline] const ignore_item_metadata = [%Michelson ({| {DROP;UNIT} |} : item_metadata -> unit)]
 
 function add (var item: item_metadata; var storage: storage): return is
     block {
@@ -82,6 +82,7 @@ function freeze (const id: nat; var storage: storage): return is
         }
         end;
     } with ((nil: list (operation)), storage)
+
 
 function main (const action : parameter; const storage : storage): return is
     case action of
