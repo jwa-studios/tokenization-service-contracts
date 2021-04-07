@@ -27,10 +27,14 @@ type parameter is record [
     instance_number: nat;
     data: item_data;
 ]
+
+type action is 
+    Add_item of parameter
+
 type return is list (operation) * inventory;
 
 //paramètres d'une fonction : 2 -> 1 paramètre et un storage
-function assign (const params: parameter; const storage: inventory): return is
+function assign_item (const params: parameter; const storage: inventory): return is
     block {
         const instances_map: option (item_instance) = storage.store[params.item_id];
         case instances_map of
@@ -56,3 +60,8 @@ function assign (const params: parameter; const storage: inventory): return is
 
                 // on ajoute l'instance dans la nouvelle map crée avec comme index instanceNumber
     } with ((nil: list (operation)), storage)
+
+function main (const action : action; const storage : inventory): return is
+    case action of
+        Add_item (i) -> assign_item(i, storage)
+    end
