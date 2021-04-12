@@ -10,6 +10,7 @@ type item_metadata is record [
 
 type parameter is 
     Add_item of item_metadata
+|   Assign_item of item_metadata
 |   Update_item of item_metadata
 |   Freeze_item of nat
 
@@ -84,10 +85,27 @@ function freeze (const id: nat; var storage: storage): return is
         end;
     } with ((nil: list (operation)), storage)
 
+function assign(const item_id: nat; const inventory_adress: adress)
+    block{
+        const item_found: item_metadate = storage.warehouse[item_id];
+
+        case item_found of 
+            None -> failwith("ITEM_DOESNT_EXIST")
+        |   Some (i) -> {
+                const available_quantity : nat = i.available_quantity;
+                
+                if i.available_quantity : nat = 0n then {
+                    failwith("NO_AVAILABE_ITEM");
+                } else {
+                    i.available_quantity : nat = i.available_quantity - 1;
+                    storage.warehouse := Big_map.update(i.item_id, Some(i), storage.warehouse);
+                }  
+}
 
 function main (const action : parameter; const storage : storage): return is
     case action of
         Add_item (i) -> add(i, storage)
+    |   Assigne_item(id) -> assign(id, storage)
     |   Update_item (i) -> update(i, storage)
     |   Freeze_item (id) -> freeze(id, storage)
     end
