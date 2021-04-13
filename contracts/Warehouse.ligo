@@ -1,4 +1,3 @@
-
 type item_metadata is record [
     available_quantity: nat;
     data: map (string, string);
