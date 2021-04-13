@@ -8,21 +8,21 @@ type storage is record [
     inventory: big_map (nat, item_instances);
 ]
 
-type parameter is record [
+type data is record [
     data: item_data;
     instance_number: nat;
     item_id: nat
 ]
 
-type action is 
-    Assign_item of parameter
-|   Update_item of parameter
+type parameter is 
+    Assign of data
+|   Update_item of data
 
 [@inline] const ignore_item_data = [%Michelson ({| {DROP;UNIT} |} : item_data -> unit)]
 
 type return is list (operation) * storage;
 
-function assign_item (const params: parameter; const storage: storage): return is
+function assign_item (const params: data; const storage: storage): return is
     block {
         const instances_map: option (item_instances) = storage.inventory[params.item_id];
 
@@ -40,7 +40,7 @@ function assign_item (const params: parameter; const storage: storage): return i
         end;
     } with ((nil: list (operation)), storage)
 
-function update_item (const params: parameter; const storage: storage): return is
+function update_item (const params: data; const storage: storage): return is
     block {
         const instances_map: option (item_instances) = storage.inventory[params.item_id];
 
@@ -61,8 +61,8 @@ function update_item (const params: parameter; const storage: storage): return i
         end;
     } with ((nil: list (operation)), storage)
 
-function main (const action: action; const storage: storage): return is
-    case action of
-        Assign_item (i) -> assign_item(i, storage)
+function main (const parameter: parameter; const storage: storage): return is
+    case parameter of
+        Assign (i) -> assign_item(i, storage)
     |   Update_item (i) -> update_item(i, storage)
     end

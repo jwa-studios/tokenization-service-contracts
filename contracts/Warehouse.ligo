@@ -7,17 +7,33 @@ type item_metadata is record [
     total_quantity: nat;
 ]
 
-type parameter is 
-    Add_item of item_metadata
-|   Assign_item of item_metadata
-|   Update_item of item_metadata
-|   Freeze_item of nat
-
 type storage is record [
     owner: address;
     version: string;
     warehouse: big_map (nat, item_metadata);
 ]
+
+type item_data is record [
+    data: map (string, string);
+]
+
+type data is record [
+    data: item_data;
+    instance_number: nat;
+    item_id: nat
+]
+
+type assign_parameters is address * data
+
+type inventory_parameter is
+    Assign of data
+
+type parameter is
+    Add_item of item_metadata
+|   Assign_item of assign_parameters
+|   Update_item of item_metadata
+|   Freeze_item of nat
+
 
 type return is list (operation) * storage;
 
@@ -84,29 +100,41 @@ function freeze (const id: nat; var storage: storage): return is
         end;
     } with ((nil: list (operation)), storage)
 
-function assign(const item_id: nat; const inventory_address: address): return is
+function assign(const params: assign_parameters; var storage: storage): return is
     block {
-        const item_found: option (item_metadata) = inventory_address.warehouse [item_id];
+        //check si l'item existe dans la warehouse
+        const item_found: option(item_metadata) = storage.warehouse[params.1.item_id];
+        var ops : list(operation) := nil;
 
         case item_found of 
             None -> failwith("ITEM_DOESNT_EXIST")
-        |   Some (i) -> {
-                const available_quantity : nat = i.available_quantity;
-                
-                if i.available_quantity = 0n then {
-                    failwith("NO_AVAILABLE_ITEM");
+            | Some (iF) -> {
+                const av_quantity : nat = iF.available_quantity;
+        
+                if av_quantity = 0n then {
+                    failwith ("NO_AVAILABLE_ITEM");
                 } else {
-                    i.available_quantity := i.available_quantity - 1n;
-                    inventory_address.warehouse := Big_map.update(i.item_id, Some(i), inventory_address.warehouse);
+                    //baisser le nombre d'item demandé dans la warehouse
+                    iF.available_quantity := abs(iF.available_quantity - 1n);
+                    storage.warehouse[params.1.item_id].available_quantity := iF.available_quantity;
+                    //appel à la fonction assing_item de l'inventaire
+                    const inventory : contract (inventory_parameter) =
+                    case (Tezos.get_entrypoint_opt("%assign_item", params.0) : option (contract (inventory_parameter))) of
+                        Some (contract) -> contract
+                        | None -> (failwith ("Contract not found.") : contract (inventory_parameter))
+                    end;
+                    const action : inventory_parameter = Assign(params.1);
+                    const op : operation = Tezos.transaction (action, 0tez, inventory);
+                    ops := list [op]
                 }
-        }
-        end;            
-    }with ((nil: list (operation)), inventory_address)
+            }
+        end;
+    } with (ops, storage)
 
 function main (const action : parameter; const storage : storage): return is
     case action of
         Add_item (i) -> add(i, storage)
-    |   Assigne_item(id) -> assign(id, storage)
+    |   Assign_item(i) -> assign(i, storage)
     |   Update_item (i) -> update(i, storage)
     |   Freeze_item (id) -> freeze(id, storage)
     end
