@@ -4,6 +4,7 @@ const { MichelsonMap } = require("@taquito/taquito");
 contract("Given Warehouse is deployed", () => {
     let warehouseInstance;
 
+
     before(async () => {
         warehouseInstance = await Warehouse.deployed();
     });
@@ -326,6 +327,33 @@ contract("Given Warehouse is deployed", () => {
                         expect(err.message).to.equal("ITEM_IS_FROZEN");
                     }
                 });
+            });
+
+            describe("When storing an item",()=>{
+                let inventoryInstance;
+
+                before(async () => {
+                    inventoryInstance = await Inventory.deployed();
+                });
+
+                it("Then assigns the item to the inventory", () => {
+                        let storage;
+            
+                    before(async () => {
+                        await warehouseInstance.assign_item(
+                            10,
+                            MichelsonMap.fromLiteral({
+                                XP: "97"
+                            }),
+                            10,
+                            "Christiano Ronaldo",
+                            undefined,
+                            10
+                        );
+            
+                        storage = await inventoryInstance.storage();
+                    });
+                }); 
             });
         });
     });

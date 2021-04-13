@@ -106,7 +106,7 @@ function assign(const item_id: nat; const inventory_address: address): return is
 function main (const action : parameter; const storage : storage): return is
     case action of
         Add_item (i) -> add(i, storage)
-    |   Assigne_item(id) -> assign(id, storage)
+    |   Assign_item(id) -> assign(id, storage)
     |   Update_item (i) -> update(i, storage)
     |   Freeze_item (id) -> freeze(id, storage)
     end
