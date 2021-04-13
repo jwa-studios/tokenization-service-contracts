@@ -84,22 +84,27 @@ function freeze (const id: nat; var storage: storage): return is
         end;
     } with ((nil: list (operation)), storage)
 
-function assign(const item_id: nat; const inventory_adress: adress)
-    block{
-        const item_found: item_metadate = storage.warehouse[item_id];
+function assign(record[const item_id: nat; const inventory_adress: adress]): return is
+    block {
+        const item_found: option (item_metadata) = storage.warehouse [item_id];
 
         case item_found of 
             None -> failwith("ITEM_DOESNT_EXIST")
         |   Some (i) -> {
                 const available_quantity : nat = i.available_quantity;
                 
-                if i.available_quantity : nat = 0n then {
+                if i.available_quantity <= 0n then {
                     failwith("NO_AVAILABE_ITEM");
                 } else {
-                    i.available_quantity : nat = i.available_quantity - 1;
-                    storage.warehouse := Big_map.update(i.item_id, Some(i), storage.warehouse);
-                }  
-}
+                    skip;
+                }
+                end;
+                
+                i.available_quantity : nat = i.available_quantity - 1;
+                storage.warehouse := Big_map.update(i.item_id, Some(i), storage.warehouse);
+        }
+        end;            
+    }with ((nil: list (operation)), inventory_adress)
 
 function main (const action : parameter; const storage : storage): return is
     case action of
