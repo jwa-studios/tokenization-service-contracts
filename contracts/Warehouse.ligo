@@ -1,4 +1,3 @@
-
 type item_metadata is record [
     available_quantity: nat;
     data: map (string, string);
@@ -10,6 +9,7 @@ type item_metadata is record [
 
 type parameter is 
     Add_item of item_metadata
+|   Assign_item of item_metadata
 |   Update_item of item_metadata
 |   Freeze_item of nat
 
@@ -19,9 +19,9 @@ type storage is record [
     warehouse: big_map (nat, item_metadata);
 ]
 
-[@inline] const ignore_item_metadata = [%Michelson ({| {DROP;UNIT} |} : item_metadata -> unit)]
-
 type return is list (operation) * storage;
+
+[@inline] const ignore_item_metadata = [%Michelson ({| {DROP;UNIT} |} : item_metadata -> unit)]
 
 function add (var item: item_metadata; var storage: storage): return is
     block {
@@ -84,9 +84,29 @@ function freeze (const id: nat; var storage: storage): return is
         end;
     } with ((nil: list (operation)), storage)
 
+function assign(const item_id: nat; const inventory_address: address): return is
+    block {
+        const item_found: option (item_metadata) = inventory_address.warehouse [item_id];
+
+        case item_found of 
+            None -> failwith("ITEM_DOESNT_EXIST")
+        |   Some (i) -> {
+                const available_quantity : nat = i.available_quantity;
+                
+                if i.available_quantity = 0n then {
+                    failwith("NO_AVAILABLE_ITEM");
+                } else {
+                    i.available_quantity := i.available_quantity - 1n;
+                    inventory_address.warehouse := Big_map.update(i.item_id, Some(i), inventory_address.warehouse);
+                }
+        }
+        end;            
+    }with ((nil: list (operation)), inventory_address)
+
 function main (const action : parameter; const storage : storage): return is
     case action of
         Add_item (i) -> add(i, storage)
+    |   Assigne_item(id) -> assign(id, storage)
     |   Update_item (i) -> update(i, storage)
     |   Freeze_item (id) -> freeze(id, storage)
     end
