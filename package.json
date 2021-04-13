@@ -43,9 +43,6 @@
     },
     "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
     "dependencies": {
-        "@jwalab/minilab": "0.0.3",
-        "fromentries": "^1.3.2",
-        "object.fromentries": "^2.0.4",
-        "polyfill-object.fromentries": "^1.0.1"
+        "@jwalab/minilab": "0.0.3"
     }
 }
