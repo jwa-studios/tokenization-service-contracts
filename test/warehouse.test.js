@@ -1,6 +1,8 @@
 const Warehouse = artifacts.require("Warehouse");
 const { MichelsonMap } = require("@taquito/taquito");
 
+const { warehouseItemToObject, getISODateNoMs } = require("./utils");
+
 contract("Given Warehouse is deployed", () => {
     let warehouseInstance;
 
@@ -46,7 +48,7 @@ contract("Given Warehouse is deployed", () => {
 
         it("Then adds the item to the warehouse", async () => {
             const item = await storage.warehouse.get("0");
-            const obj = itemToObject(item);
+            const obj = warehouseItemToObject(item);
 
             expect(obj).to.deep.eql({
                 available_quantity: 10,
@@ -103,7 +105,7 @@ contract("Given Warehouse is deployed", () => {
 
             it("Then updates the item in the warehouse", async () => {
                 const item = await storage.warehouse.get("0");
-                const obj = itemToObject(item);
+                const obj = warehouseItemToObject(item);
 
                 expect(obj).to.eql({
                     available_quantity: 100,
@@ -171,7 +173,7 @@ contract("Given Warehouse is deployed", () => {
 
         it("Then has a matching `no_update_after` timestamp", async () => {
             const item = await storage.warehouse.get("100");
-            const obj = itemToObject(item);
+            const obj = warehouseItemToObject(item);
 
             expect(obj).to.eql({
                 available_quantity: 10,
@@ -235,7 +237,7 @@ contract("Given Warehouse is deployed", () => {
 
         it("Then has a matching `no_update_after` timestamp", async () => {
             const item = await storage.warehouse.get("200");
-            const obj = itemToObject(item);
+            const obj = warehouseItemToObject(item);
 
             expect(obj).to.eql({
                 available_quantity: 10,
@@ -267,7 +269,7 @@ contract("Given Warehouse is deployed", () => {
 
             it("Then allows me to update it", async () => {
                 const item = await storage.warehouse.get("200");
-                const obj = itemToObject(item);
+                const obj = warehouseItemToObject(item);
 
                 expect(obj).to.eql({
                     available_quantity: 10,
@@ -330,21 +332,3 @@ contract("Given Warehouse is deployed", () => {
         });
     });
 });
-
-function itemToObject(item) {
-    return {
-        no_update_after: item.no_update_after
-            ? getISODateNoMs(new Date(item.no_update_after))
-            : undefined,
-        item_id: item.item_id.toNumber(),
-        name: item.name,
-        total_quantity: item.total_quantity.toNumber(),
-        available_quantity: item.available_quantity.toNumber(),
-        data: Object.fromEntries(item.data.entries())
-    };
-}
-
-function getISODateNoMs(date = new Date()) {
-    date.setMilliseconds(0);
-    return date.toISOString();
-}

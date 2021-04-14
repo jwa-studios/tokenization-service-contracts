@@ -1,6 +1,8 @@
 const Inventory = artifacts.require("Inventory");
 const { MichelsonMap } = require("@taquito/taquito");
 
+const { getInventoryItemtAt } = require("./utils");
+
 contract("Given Inventory is deployed", () => {
     let inventoryInstance;
     let storage;
@@ -23,7 +25,7 @@ contract("Given Inventory is deployed", () => {
         });
 
         it("Then assigns the item to the inventory", async () => {
-            const obj = await getObjectAt(storage, 2, 12);
+            const obj = await getInventoryItemtAt(storage, 2, 12);
 
             expect(obj).to.deep.eql({
                 data: {
@@ -46,7 +48,7 @@ contract("Given Inventory is deployed", () => {
             });
 
             it("Then updates the assigned item", async () => {
-                const obj = await getObjectAt(storage, 2, 12);
+                const obj = await getInventoryItemtAt(storage, 2, 12);
 
                 expect(obj).to.deep.eql({
                     data: {
@@ -99,15 +101,3 @@ contract("Given Inventory is deployed", () => {
         });
     });
 });
-
-async function getObjectAt(storage, itemId, instanceNumber) {
-    const instance_map = await storage.get(String(itemId));
-    const entries = Object.fromEntries(instance_map.entries());
-    return itemToObject(entries[String(instanceNumber)]);
-}
-
-function itemToObject(itemData) {
-    return {
-        data: Object.fromEntries(itemData.entries())
-    };
-}
