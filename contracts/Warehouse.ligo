@@ -16,7 +16,7 @@ type inventory_assign_parameter is record [
 type inventory_parameter is
     Assign_item of inventory_assign_parameter
 
-type assign_parameter is address * nat;
+type assign_parameter is address * nat * nat;
 
 type parameter is 
     Add_item of item_metadata
@@ -78,8 +78,9 @@ function assign (const params: assign_parameter; var storage: storage): return i
             None -> failwith("ITEM_DOESNT_EXIST")
             | Some (fi) -> {
                 const available_quantity : nat = fi.available_quantity;
+                const total_quantity : nat = fi.total_quantity;
         
-                if available_quantity = 0n then {
+                if available_quantity = 0n or params.2 > total_quantity then {
                     failwith ("NO_AVAILABLE_ITEM");
                 } else {
                     const inventory : contract (inventory_parameter) =
@@ -90,7 +91,7 @@ function assign (const params: assign_parameter; var storage: storage): return i
 
                     const action : inventory_parameter = Assign_item (record [
                         data = fi.data;
-                        instance_number = abs (fi.total_quantity - fi.available_quantity + 1n);
+                        instance_number = params.2;
                         item_id = params.1;
                     ]);
 
