@@ -37,7 +37,8 @@ contract("Given Warehouse and Inventory are deployed", () => {
             before(async () => {
                 await warehouseInstance.assign_item_proxy(
                     inventoryInstance.address,
-                    9
+                    9,
+                    1
                 );
 
                 inventoryStorage = await inventoryInstance.storage();
@@ -54,7 +55,7 @@ contract("Given Warehouse and Inventory are deployed", () => {
                 });
             });
 
-            it("Then sets decrements the available quantity for the item", async () => {
+            it("Then decrements the available quantity for the item", async () => {
                 const item = await warehouseStorage.warehouse.get("9");
 
                 const obj = warehouseItemToObject(item);
@@ -76,7 +77,8 @@ contract("Given Warehouse and Inventory are deployed", () => {
                     try {
                         await warehouseInstance.assign_item_proxy(
                             inventoryInstance.address,
-                            9
+                            9,
+                            1
                         );
 
                         console.error(
@@ -110,7 +112,8 @@ contract("Given Warehouse and Inventory are deployed", () => {
                 try {
                     await warehouseInstance.assign_item_proxy(
                         "KT1CKvaBW4kzvxChQpbG9GQPTiwtVX6kj1WY",
-                        20
+                        20,
+                        1
                     );
 
                     console.error(
