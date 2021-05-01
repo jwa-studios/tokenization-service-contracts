@@ -4,7 +4,7 @@ The Tokenization Service's Smart Contracts.
 There are mostly 2 contracts:
 
 1. The Warehouse, which contains all tokenized items, including their full description and quantities.
-2. The Ledger, which retraces important historical information of a given item and their owners.
+2. The Inventory, which stores a user's token updates over time.
 
 ## How to use the smart contracts:
 
@@ -70,9 +70,9 @@ Our Smart Contracts are fully tested, please look at the `./test` folder to see 
 1. Items created in the Warehouse are truly immutable, their characteristics may never be altered. Just like a manufactured product once manufactured can't be altered. If a faulty item is minted, it must be discarded or sold as-is, or minted again.
 2. Items in the Warehouse don't belong to anyone and can't be transferred. Items in the Warehouse are not owned, only linked to an originator.
 3. Items in the Warehouse are semi-fungible. If an item is created with a quantity of 1000, all 1000 items have the same value and can be exchanged without destruction of value.
-4. When an item in the Warehouse is purchased, its new owner will have a Ledger created and the item will be added to that Ledger as a mutable copy of the original item. The Warehouse item remains unaltered, its total quantity remains unaltered, but there's one fewer item left to be purchased.
-5. When an item owner alters an item they have purchased, the changes are recorded in the Ledger. The item there is simply mutated. Since all mutations are recorded as an entrypoint call, we can recreate an audit trail of changes.
-6. An item can be transferred between compatible ledgers. Only the originator of the contract is able to initiate a transfer and only the owner of the Warehouse contract is able to mutate objects in a Ledger.
+4. When an item in the Warehouse is purchased, its new owner will have an Inventory created and the item will be added to that Inventory as a mutable copy of the original item. The Warehouse item remains unaltered, its total quantity remains unaltered, but there's one fewer item left to be purchased (available_quantity).
+5. When an item owner alters an item they have purchased, the changes are recorded in the Inventory. The item there is simply mutated. Since all mutations are recorded as an entrypoint call, we can recreate an audit trail of changes using an indexer.
+6. An item can be transferred between compatible inventories. Only the originator of the contract is able to initiate a transfer and only the owner of the Warehouse contract is able to mutate objects in the inventory (not yet implemented).
 7. One more thing, an item in the Warehouse can be modified until the `no_update_after` timestamp is in the past. We call it an expiration date as it prevents items from being modified after that date. We say that when the item can't be modified anymore, it's frozen. An item can be frozen quickly by calling the appropriate entrypoint. Until the expiration date is reached, the date can be removed or pushed further in the future.
 
 ### Project Structure
