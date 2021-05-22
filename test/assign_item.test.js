@@ -45,13 +45,11 @@ contract("Given Warehouse and Inventory are deployed", () => {
                 warehouseStorage = await warehouseInstance.storage();
             });
 
-            it("Then assigns the item to the inventory", async () => {
+            it("Then assigns the item to the inventory AND the data field is empty", async () => {
                 const obj = await getInventoryItemtAt(inventoryStorage, 9, 1);
 
                 expect(obj).to.deep.eql({
-                    data: {
-                        XP: "97"
-                    }
+                    data: {}
                 });
             });
 
