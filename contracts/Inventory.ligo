@@ -22,7 +22,7 @@ type action is
 
 type return is list (operation) * storage;
 
-function assign_item (const params: parameter; const storage: storage): return is
+function assign_item (const params: parameter; var storage: storage): return is
     block {
         const instances_map: option (item_instances) = storage.inventory[params.item_id];
 
@@ -30,30 +30,30 @@ function assign_item (const params: parameter; const storage: storage): return i
             None -> block {
                 const new_instances_map : item_instances = map [params.instance_number -> params.data];
 
-                storage.inventory := Big_map.add(params.item_id, new_instances_map, storage.inventory)
+                storage.inventory := Big_map.add (params.item_id, new_instances_map, storage.inventory)
             }
-            | Some(im) -> block {
-                im := Map.add(params.instance_number, params.data, im);
+            | Some (im) -> block {
+                const updated_im = Map.add (params.instance_number, params.data, im);
 
-                storage.inventory := Big_map.add(params.item_id, im, storage.inventory)
+                storage.inventory := Big_map.add (params.item_id, updated_im, storage.inventory)
             }
         end;
     } with ((nil: list (operation)), storage)
 
-function update_item (const params: parameter; const storage: storage): return is
+function update_item (const params: parameter; var storage: storage): return is
     block {
         const instances_map: option (item_instances) = storage.inventory[params.item_id];
 
         case instances_map of
-            None -> failwith("NO_SUCH_ITEM_IN_INVENTORY")
+            None -> failwith ("NO_SUCH_ITEM_IN_INVENTORY")
             | Some (im) -> block {
                 const instance: option (item_data) = im [params.instance_number];
 
                 case instance of
                     None -> failwith("NO_SUCH_INSTANCE_NUMBER")
                 |   Some (i) -> block {
-                    ignore_item_data(i);
-                    const updated_im : item_instances = Map.update(params.instance_number, Some (params.data), im);
+                    ignore_item_data (i);
+                    const updated_im : item_instances = Map.update (params.instance_number, Some (params.data), im);
                     storage.inventory [params.item_id] := updated_im
                 }
                 end;
@@ -63,6 +63,6 @@ function update_item (const params: parameter; const storage: storage): return i
 
 function main (const action: action; const storage: storage): return is
     case action of
-        Assign_item (i) -> assign_item(i, storage)
-    |   Update_item (i) -> update_item(i, storage)
+        Assign_item (i) -> assign_item (i, storage)
+    |   Update_item (i) -> update_item (i, storage)
     end
