@@ -1,7 +1,15 @@
-async function getInventoryItemtAt(storage, itemId, instanceNumber) {
+const { isConstructorDeclaration } = require("typescript");
+
+async function getInventoryItemAt(storage, itemId, instanceNumber) {
     const instance_map = await storage.get(String(itemId));
     const entries = Object.fromEntries(instance_map.entries());
     return inventoryItemToObject(entries[String(instanceNumber)]);
+}
+
+async function hasInventoryItemAt(storage, itemId, instanceNumber) {
+    const instance_map = await storage.get(String(itemId));
+    const entries = Object.fromEntries(instance_map.entries());
+    return Boolean(entries[String(instanceNumber)]);
 }
 
 function inventoryItemToObject(itemData) {
@@ -45,6 +53,7 @@ module.exports = {
     getISODateNoMs,
     warehouseItemToObject,
     inventoryItemToObject,
-    getInventoryItemtAt,
+    getInventoryItemAt,
+    hasInventoryItemAt,
     originateContract
 };

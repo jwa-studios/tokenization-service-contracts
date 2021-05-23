@@ -1,6 +1,6 @@
 {
     "name": "@jwalab/tokenization-service-contracts",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "files": [
         "index.js",
         "dist",
@@ -44,5 +44,8 @@
     "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
     "peerDependencies": {
         "@taquito/taquito": "^9.2.0"
+    },
+    "dependencies": {
+        "lint": "^0.7.0"
     }
 }

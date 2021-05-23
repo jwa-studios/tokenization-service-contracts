@@ -1,7 +1,7 @@
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 const { InMemorySigner } = require("@taquito/signer");
 
-const { originateContract, getInventoryItemtAt } = require("./utils");
+const { originateContract, getInventoryItemAt } = require("./utils");
 
 const inventoryContract = require("../build/contracts/inventory.json");
 
@@ -29,7 +29,7 @@ describe("Given Inventory is deployed", () => {
     describe("When assigning a new item", () => {
         beforeAll(async () => {
             const operation = await inventoryInstance.methods
-                .assign_item(
+                .assign_item_inventory(
                     MichelsonMap.fromLiteral({
                         XP: "97"
                     }),
@@ -44,7 +44,7 @@ describe("Given Inventory is deployed", () => {
         });
 
         it("Then assigns the item to the inventory", async () => {
-            const obj = await getInventoryItemtAt(storage, 2, 12);
+            const obj = await getInventoryItemAt(storage, 2, 12);
 
             expect(obj).toEqual({
                 data: {
@@ -71,7 +71,7 @@ describe("Given Inventory is deployed", () => {
             });
 
             it("Then updates the assigned item", async () => {
-                const obj = await getInventoryItemtAt(storage, 2, 12);
+                const obj = await getInventoryItemAt(storage, 2, 12);
 
                 expect(obj).toEqual({
                     data: {

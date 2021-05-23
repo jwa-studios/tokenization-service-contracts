@@ -22,7 +22,7 @@ type parameter is
     Add_item of item_metadata
 |   Assign_item_proxy of assign_parameter
 |   Update_item of item_metadata
-|   Freeze_item of nat
+|   Freeze_item of nat 
 
 type storage is record [
     owner: address;
@@ -84,7 +84,7 @@ function assign (const params: assign_parameter; var storage: storage): return i
                     failwith ("NO_AVAILABLE_ITEM");
                 } else {
                     const inventory : contract (inventory_parameter) =
-                        case (Tezos.get_entrypoint_opt ("%assign_item", params.0) : option (contract (inventory_parameter))) of
+                        case (Tezos.get_entrypoint_opt ("%assign_item_inventory", params.0) : option (contract (inventory_parameter))) of
                             Some (contract) -> contract
                             | None -> (failwith ("CONTRACT_NOT_FOUND") : contract (inventory_parameter))
                         end;
