@@ -6,7 +6,7 @@ const warehouseContract = require("../build/contracts/warehouse.json");
 
 const {
     warehouseItemToObject,
-    getInventoryItemtAt,
+    getInventoryItemAt,
     originateContract
 } = require("./utils");
 
@@ -71,7 +71,7 @@ describe("Given Warehouse and Inventory are deployed", () => {
             });
 
             it("Then assigns the item to the inventory AND the data field is empty", async () => {
-                const obj = await getInventoryItemtAt(inventoryStorage, 9, 1);
+                const obj = await getInventoryItemAt(inventoryStorage, 9, 1);
 
                 expect(obj).toEqual({
                     data: {}
