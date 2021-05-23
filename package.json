@@ -1,6 +1,6 @@
 {
     "name": "@jwalab/tokenization-service-contracts",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "files": [
         "index.js",
         "dist",
@@ -13,10 +13,11 @@
         "ganache-core": "^2.13.2",
         "husky": "4.3.0",
         "prettier": "2.2.1",
-        "truffle": "5.5.0-tezos.4"
+        "truffle": "5.5.0-tezos.4",
+        "typescript": "^4.2.4"
     },
     "scripts": {
-        "prepublishOnly": "npm run compile && node ./scripts/prepareDist.js && npm run lint-fix",
+        "prepublishOnly": "npm run compile && node ./scripts/prepareDist.js && npm run lint-fix && tsc",
         "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")",
         "lint": "prettier --check .",
         "lint-fix": "prettier --write .",
@@ -35,7 +36,8 @@
         "tokenization",
         "service"
     ],
-    "types": "typings/index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "author": "JWA Lab",
     "license": "Apache-2.0",
     "bugs": {
@@ -44,5 +46,8 @@
     "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
     "dependencies": {
         "@jwalab/minilab": "0.0.3"
+    },
+    "peerDependencies": {
+        "@taquito/taquito": "^8.1.1"
     }
 }
