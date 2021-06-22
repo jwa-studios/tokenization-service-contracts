@@ -1,4 +1,4 @@
-const contracts: {
+export const contracts: {
     [k: string]: Contract;
 };
 

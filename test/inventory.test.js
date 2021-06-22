@@ -5,6 +5,7 @@ const { getInventoryItemtAt } = require("./utils");
 
 contract("Given Inventory is deployed", () => {
     let inventoryInstance;
+    let transferInventoryInstance;
     let storage;
 
     before(async () => {
@@ -100,4 +101,45 @@ contract("Given Inventory is deployed", () => {
             }
         });
     });
+    {
+        describe("When transfering an item", ()=> {
+            before(async () => {
+                await inventoryInstance.transfer_item(
+                    MichelsonMap.fromLiteral({
+                        XP: "97"
+                    }),
+                    12,
+                    1
+                );
+                new_storage = await transferInventoryInstance.storage();
+                old_storage = await inventoryInstance.storage();
+            });
+            it("Then checks if the item has been assigned", async () => {
+                const obj = await getInventoryItemtAt(new_storage, 2, 12);
+
+                expect(obj);
+            });
+            it("Then checks if the item has been deleted", async () => {
+                const obj = await getInventoryItemtAt(old_storage, 2, 12);
+
+                expect(!obj);
+            });
+        });
+        it("Then fails When transfering an unassigned item", async () => {
+            try {
+                await inventoryInstance.transfer_item(
+                    1
+                );
+
+                console.error(
+                    "Will fail: Assign_Item should throw an Error if the item isn't assign to this inventory"
+                );
+                expect.fail(
+                    "Assign_Item should throw an Error if the item isn't assigned to this inventory"
+                );
+            } catch (err) {
+                expect(err.message).to.equal("NO_SUCH_ITEM_IN_INVENTORY");
+            }
+        });
+    }
 });

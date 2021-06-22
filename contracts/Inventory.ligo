@@ -5,7 +5,7 @@ type item_data is record [
 type item_instances is map(nat, item_data)
 
 type storage is record [
-    inventory: big_map (nat, item_instances);
+    inventory: big_map (nat, item_instances)
 ]
 
 type parameter is record [
