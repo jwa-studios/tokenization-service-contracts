@@ -16,7 +16,7 @@ type inventory_assign_parameter is record [
 type inventory_parameter is
     Assign_item of inventory_assign_parameter
 
-type assign_parameter is address * nat;
+type assign_parameter is address * nat * nat;
 
 type parameter is 
     Add_item of item_metadata
@@ -78,8 +78,9 @@ function assign (const params: assign_parameter; var storage: storage): return i
             None -> failwith("ITEM_DOESNT_EXIST")
             | Some (fi) -> {
                 const available_quantity : nat = fi.available_quantity;
+                const total_quantity : nat = fi.total_quantity;
         
-                if available_quantity = 0n then {
+                if available_quantity = 0n or params.2 > total_quantity then {
                     failwith ("NO_AVAILABLE_ITEM");
                 } else {
                     const inventory : contract (inventory_parameter) =
@@ -90,7 +91,7 @@ function assign (const params: assign_parameter; var storage: storage): return i
 
                     const action : inventory_parameter = Assign_item (record [
                         data = fi.data;
-                        instance_number = abs (fi.total_quantity - fi.available_quantity + 1n);
+                        instance_number = params.2;
                         item_id = params.1;
                     ]);
 
@@ -129,6 +130,36 @@ function freeze (const id: nat; var storage: storage): return is
         }
         end;
     } with ((nil: list (operation)), storage)
+    
+function transfer (const params: assign_parameter; var storage: storage): return is
+    block {
+        var ops : list (operation) := nil;
+        const found_item: option (item_metadata) = storage.warehouse[params.1];
+        //Checks if the item exists
+        case found_item of
+            None -> failwith("ITEM_DOESNT_EXIST")
+            | Some (fi) -> {
+                //Gets the assign_item entrypoint
+                const transfer_inventory : contract (inventory_parameter) =
+                    case (Tezos.get_entrypoint_opt("%assign_item", params.0) : option (contract (inventory_parameter))) of
+                        Some (contract) -> contract
+                        | None -> (failwith ("CONTRACT_NOT_FOUND") : contract (inventory_parameter))
+                    end;
+                //Assigns the item to params.0 (new inventory)
+                const assign_action : inventory_parameter = Assign_item (record [
+                    data = fi.data;
+                    instance_number = params.2;
+                    item_id = params.1;
+                ]);
+
+                //Removes the item from storage.warehouse (old inventory)
+                storage.warehouse := Big_map.remove(params.1,fi.data,storage.warehouse); 
+
+                const op : operation = Tezos.transaction (action, 0tez, inventory);
+                ops := list [op];
+            }
+        end;
+    } with (ops, storage)
 
 function main (const action : parameter; const storage : storage): return is
     case action of
@@ -136,4 +167,5 @@ function main (const action : parameter; const storage : storage): return is
     |   Assign_item_proxy (ap) -> assign(ap, storage)
     |   Update_item (i) -> update(i, storage)
     |   Freeze_item (id) -> freeze(id, storage)
+    |   Freeze_item (ap) -> freeze(ap, storage)
     end
