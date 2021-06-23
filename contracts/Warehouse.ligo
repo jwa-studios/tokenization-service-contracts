@@ -167,5 +167,5 @@ function main (const action : parameter; const storage : storage): return is
     |   Assign_item_proxy (ap) -> assign(ap, storage)
     |   Update_item (i) -> update(i, storage)
     |   Freeze_item (id) -> freeze(id, storage)
-    |   Freeze_item (ap) -> freeze(ap, storage)
+    |   Transfer_item (ap) -> transfer(ap, storage)
     end
