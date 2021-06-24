@@ -8,7 +8,7 @@
     ],
     "description": "Tokenization Service's Smart Contracts",
     "devDependencies": {
-        "@taquito/signer": "^8.0.3-beta.0",
+        "@taquito/signer": "^9.1.1",
         "ganache-cli": "^6.12.2",
         "ganache-core": "^2.13.2",
         "husky": "4.3.0",
@@ -19,9 +19,10 @@
     "scripts": {
         "prepublishOnly": "npm run compile && node ./scripts/prepareDist.js && npm run lint-fix && tsc",
         "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")",
+        "start-florencebox": "docker run --rm --name my-sandbox -e block_time=2 --detach -p 20000:20000 tqtezos/flextesa:20210602 flobox start",
         "lint": "prettier --check .",
         "lint-fix": "prettier --write .",
-        "test": "truffle test",
+        "test": "truffle test ./test/warehouse.test.js --network minilab",
         "compile": "truffle compile"
     },
     "repository": {
@@ -48,6 +49,6 @@
         "@jwalab/minilab": "0.0.3"
     },
     "peerDependencies": {
-        "@taquito/taquito": "^8.1.1"
+        "@taquito/taquito": "^9.1.1"
     }
 }

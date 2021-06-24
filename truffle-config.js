@@ -17,6 +17,13 @@ module.exports = {
             network_id: "*",
             secretKey: alice.sk,
             type: "tezos"
+        },
+        florencenet: {
+            host: "https://florencenet.smartpy.io",
+            port: 443,
+            network_id: "*",
+            secretKey: alice.sk,
+            type: "tezos"
         }
     }
 };

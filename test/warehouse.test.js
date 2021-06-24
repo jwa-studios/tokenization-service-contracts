@@ -5,9 +5,14 @@ const { warehouseItemToObject, getISODateNoMs } = require("./utils");
 
 contract("Given Warehouse is deployed", () => {
     let warehouseInstance;
+    let contract;
 
     before(async () => {
         warehouseInstance = await Warehouse.deployed();
+
+        contract = await tezos.contract.at(warehouseInstance.address);
+
+        console.log(contract.parameterSchema.ExtractSignatures())
     });
 
     describe("When getting the storage", () => {
@@ -32,16 +37,16 @@ contract("Given Warehouse is deployed", () => {
         let storage;
 
         before(async () => {
-            await warehouseInstance.add_item(
+            await contract.methods.add_item(
                 10,
                 MichelsonMap.fromLiteral({
                     XP: "97"
                 }),
                 0,
                 "Christiano Ronaldo",
-                undefined,
+                null,
                 10
-            );
+            ).send();
 
             storage = await warehouseInstance.storage();
         });
@@ -57,7 +62,7 @@ contract("Given Warehouse is deployed", () => {
                 },
                 item_id: 0,
                 name: "Christiano Ronaldo",
-                no_update_after: undefined,
+                no_update_after: null,
                 total_quantity: 10
             });
         });
@@ -72,7 +77,7 @@ contract("Given Warehouse is deployed", () => {
                         }),
                         0,
                         "Christiano Ronaldo",
-                        undefined,
+                        null,
                         10
                     );
 
@@ -98,7 +103,7 @@ contract("Given Warehouse is deployed", () => {
                     }),
                     0,
                     "Christiano Ronaldo",
-                    undefined,
+                    null,
                     100
                 );
             });
@@ -115,7 +120,7 @@ contract("Given Warehouse is deployed", () => {
                     },
                     item_id: 0,
                     name: "Christiano Ronaldo",
-                    no_update_after: undefined,
+                    no_update_after: null,
                     total_quantity: 100
                 });
             });
@@ -131,7 +136,7 @@ contract("Given Warehouse is deployed", () => {
                         }),
                         1234,
                         "Christiano Ronaldo",
-                        undefined,
+                        null,
                         10
                     );
 
@@ -196,7 +201,7 @@ contract("Given Warehouse is deployed", () => {
                     }),
                     100,
                     "Christiano Ronaldo",
-                    undefined,
+                    null,
                     10
                 );
 
@@ -298,7 +303,7 @@ contract("Given Warehouse is deployed", () => {
                         }),
                         200,
                         "Christiano Ronaldo",
-                        undefined,
+                        null,
                         10
                     );
 
