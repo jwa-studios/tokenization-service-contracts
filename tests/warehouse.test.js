@@ -1,28 +1,47 @@
-const Warehouse = artifacts.require("Warehouse");
-const { MichelsonMap } = require("@taquito/taquito");
+const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
+const { InMemorySigner } = require("@taquito/signer");
 
-const { warehouseItemToObject, getISODateNoMs } = require("./utils");
+const {
+    warehouseItemToObject,
+    getISODateNoMs,
+    originateContract
+} = require("./utils");
 
-contract("Given Warehouse is deployed", () => {
+const warehouseContract = require("../build/contracts/warehouse.json");
+
+describe("Given Warehouse is deployed", () => {
     let warehouseInstance;
+    let tezos;
 
-    before(async () => {
-        warehouseInstance = await Warehouse.deployed();
+    beforeAll(async () => {
+        tezos = new TezosToolkit("http://localhost:20000");
+
+        tezos.setProvider({
+            signer: new InMemorySigner(
+                "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
+            )
+        });
+
+        warehouseInstance = await originateContract(tezos, warehouseContract, {
+            owner: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+            version: "1",
+            warehouse: MichelsonMap.fromLiteral({})
+        });
     });
 
     describe("When getting the storage", () => {
         let storage;
 
-        before(async () => {
+        beforeAll(async () => {
             storage = await warehouseInstance.storage();
         });
 
         it("Then returns the current version", () => {
-            expect(storage.version).to.equal("1");
+            expect(storage.version).toEqual("1");
         });
 
         it("Then returns the owner", () => {
-            expect(storage.owner).to.equal(
+            expect(storage.owner).toEqual(
                 "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"
             );
         });
@@ -31,17 +50,21 @@ contract("Given Warehouse is deployed", () => {
     describe("When adding a new item", () => {
         let storage;
 
-        before(async () => {
-            await warehouseInstance.add_item(
-                10,
-                MichelsonMap.fromLiteral({
-                    XP: "97"
-                }),
-                0,
-                "Christiano Ronaldo",
-                undefined,
-                10
-            );
+        beforeAll(async () => {
+            const operation = await warehouseInstance.methods
+                .add_item(
+                    10,
+                    MichelsonMap.fromLiteral({
+                        XP: "97"
+                    }),
+                    0,
+                    "Christiano Ronaldo",
+                    undefined,
+                    10
+                )
+                .send();
+
+            await operation.confirmation(1);
 
             storage = await warehouseInstance.storage();
         });
@@ -50,7 +73,7 @@ contract("Given Warehouse is deployed", () => {
             const item = await storage.warehouse.get("0");
             const obj = warehouseItemToObject(item);
 
-            expect(obj).to.deep.eql({
+            expect(obj).toEqual({
                 available_quantity: 10,
                 data: {
                     XP: "97"
@@ -65,49 +88,58 @@ contract("Given Warehouse is deployed", () => {
         describe("When adding an item with the same item ID", () => {
             it("Then fails with an explicit error", async () => {
                 try {
-                    await warehouseInstance.add_item(
-                        10,
-                        MichelsonMap.fromLiteral({
-                            XP: "97"
-                        }),
-                        0,
-                        "Christiano Ronaldo",
-                        undefined,
-                        10
-                    );
+                    const operation = await warehouseInstance.methods
+                        .add_item(
+                            10,
+                            MichelsonMap.fromLiteral({
+                                XP: "97"
+                            }),
+                            0,
+                            "Christiano Ronaldo",
+                            undefined,
+                            10
+                        )
+                        .send();
+
+                    await operation.confirmation(1);
 
                     console.error(
                         "Will fail: Add_Item should throw an Error if Warehouse already possesses an item with the same ID"
                     );
-                    expect.fail(
+
+                    fail(
                         "Add Item should throw an Error if Warehouse already possesses an item with the same ID"
                     );
                 } catch (err) {
-                    expect(err.message).to.equal("ITEM_ID_ALREADY_EXISTS");
+                    expect(err.message).toEqual("ITEM_ID_ALREADY_EXISTS");
                 }
             });
         });
 
         describe("When updating the item", () => {
-            before(async () => {
-                await warehouseInstance.update_item(
-                    100,
-                    MichelsonMap.fromLiteral({
-                        XP: "98",
-                        CLUB: "JUVE"
-                    }),
-                    0,
-                    "Christiano Ronaldo",
-                    undefined,
-                    100
-                );
+            beforeAll(async () => {
+                const operation = await warehouseInstance.methods
+                    .update_item(
+                        100,
+                        MichelsonMap.fromLiteral({
+                            XP: "98",
+                            CLUB: "JUVE"
+                        }),
+                        0,
+                        "Christiano Ronaldo",
+                        undefined,
+                        100
+                    )
+                    .send();
+
+                await operation.confirmation(1);
             });
 
             it("Then updates the item in the warehouse", async () => {
                 const item = await storage.warehouse.get("0");
                 const obj = warehouseItemToObject(item);
 
-                expect(obj).to.eql({
+                expect(obj).toEqual({
                     available_quantity: 100,
                     data: {
                         XP: "98",
@@ -124,25 +156,30 @@ contract("Given Warehouse is deployed", () => {
         describe("When updating an item that doesn't exist", () => {
             it("Then fails with an explicit error", async () => {
                 try {
-                    await warehouseInstance.update_item(
-                        10,
-                        MichelsonMap.fromLiteral({
-                            XP: "97"
-                        }),
-                        1234,
-                        "Christiano Ronaldo",
-                        undefined,
-                        10
-                    );
+                    const operation = await warehouseInstance.methods
+                        .update_item(
+                            10,
+                            MichelsonMap.fromLiteral({
+                                XP: "97"
+                            }),
+                            1234,
+                            "Christiano Ronaldo",
+                            undefined,
+                            10
+                        )
+                        .send();
+
+                    await operation.confirmation(1);
 
                     console.error(
                         "Will fail: Update_Item should throw an Error if Warehouse doesn't possess an item with this ID"
                     );
-                    expect.fail(
+
+                    fail(
                         "Add Item should throw an Error if Warehouse doesn't possess an item with this ID"
                     );
                 } catch (err) {
-                    expect(err.message).to.equal("ITEM_ID_DOESNT_EXIST");
+                    expect(err.message).toEqual("ITEM_ID_DOESNT_EXIST");
                 }
             });
         });
@@ -152,21 +189,25 @@ contract("Given Warehouse is deployed", () => {
         let storage;
         let noUpdateAfter;
 
-        before(async () => {
+        beforeAll(async () => {
             const pastDate = new Date();
             pastDate.setHours(pastDate.getHours() - 1);
             noUpdateAfter = getISODateNoMs(pastDate);
 
-            await warehouseInstance.add_item(
-                10,
-                MichelsonMap.fromLiteral({
-                    XP: "97"
-                }),
-                100,
-                "Christiano Ronaldo",
-                noUpdateAfter,
-                10
-            );
+            const operation = await warehouseInstance.methods
+                .add_item(
+                    10,
+                    MichelsonMap.fromLiteral({
+                        XP: "97"
+                    }),
+                    100,
+                    "Christiano Ronaldo",
+                    noUpdateAfter,
+                    10
+                )
+                .send();
+
+            await operation.confirmation(1);
 
             storage = await warehouseInstance.storage();
         });
@@ -175,7 +216,7 @@ contract("Given Warehouse is deployed", () => {
             const item = await storage.warehouse.get("100");
             const obj = warehouseItemToObject(item);
 
-            expect(obj).to.eql({
+            expect(obj).toEqual({
                 available_quantity: 10,
                 data: {
                     XP: "97"
@@ -189,25 +230,30 @@ contract("Given Warehouse is deployed", () => {
 
         it("Then may not be modified anymore", async () => {
             try {
-                await warehouseInstance.update_item(
-                    10,
-                    MichelsonMap.fromLiteral({
-                        XP: "98"
-                    }),
-                    100,
-                    "Christiano Ronaldo",
-                    undefined,
-                    10
-                );
+                const operation = await warehouseInstance.methods
+                    .update_item(
+                        10,
+                        MichelsonMap.fromLiteral({
+                            XP: "98"
+                        }),
+                        100,
+                        "Christiano Ronaldo",
+                        undefined,
+                        10
+                    )
+                    .send();
+
+                await operation.confirmation(1);
 
                 console.error(
                     "Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
                 );
-                expect.fail(
+
+                fail(
                     "Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
                 );
             } catch (err) {
-                expect(err.message).to.equal("ITEM_IS_FROZEN");
+                expect(err.message).toEqual("ITEM_IS_FROZEN");
             }
         });
     });
@@ -216,21 +262,25 @@ contract("Given Warehouse is deployed", () => {
         let storage;
         let noUpdateAfter;
 
-        before(async () => {
+        beforeAll(async () => {
             const futureDate = new Date();
             futureDate.setHours(futureDate.getHours() + 1);
             noUpdateAfter = getISODateNoMs(futureDate);
 
-            await warehouseInstance.add_item(
-                10,
-                MichelsonMap.fromLiteral({
-                    XP: "97"
-                }),
-                200,
-                "Christiano Ronaldo",
-                noUpdateAfter,
-                10
-            );
+            const operation = await warehouseInstance.methods
+                .add_item(
+                    10,
+                    MichelsonMap.fromLiteral({
+                        XP: "97"
+                    }),
+                    200,
+                    "Christiano Ronaldo",
+                    noUpdateAfter,
+                    10
+                )
+                .send();
+
+            await operation.confirmation(1);
 
             storage = await warehouseInstance.storage();
         });
@@ -239,7 +289,7 @@ contract("Given Warehouse is deployed", () => {
             const item = await storage.warehouse.get("200");
             const obj = warehouseItemToObject(item);
 
-            expect(obj).to.eql({
+            expect(obj).toEqual({
                 available_quantity: 10,
                 data: {
                     XP: "97"
@@ -252,17 +302,21 @@ contract("Given Warehouse is deployed", () => {
         });
 
         describe("And when I modify it again", () => {
-            before(async () => {
-                await warehouseInstance.update_item(
-                    10,
-                    MichelsonMap.fromLiteral({
-                        XP: "98"
-                    }),
-                    200,
-                    "Christiano Ronaldo",
-                    noUpdateAfter,
-                    10
-                );
+            beforeAll(async () => {
+                const operation = await warehouseInstance.methods
+                    .update_item(
+                        10,
+                        MichelsonMap.fromLiteral({
+                            XP: "98"
+                        }),
+                        200,
+                        "Christiano Ronaldo",
+                        noUpdateAfter,
+                        10
+                    )
+                    .send();
+
+                await operation.confirmation(1);
 
                 storage = await warehouseInstance.storage();
             });
@@ -271,7 +325,7 @@ contract("Given Warehouse is deployed", () => {
                 const item = await storage.warehouse.get("200");
                 const obj = warehouseItemToObject(item);
 
-                expect(obj).to.eql({
+                expect(obj).toEqual({
                     available_quantity: 10,
                     data: {
                         XP: "98"
@@ -285,47 +339,60 @@ contract("Given Warehouse is deployed", () => {
         });
 
         describe("And when I freeze it", () => {
-            before(async () => {
-                await warehouseInstance.freeze_item(200);
+            beforeAll(async () => {
+                const operation = await warehouseInstance.methods
+                    .freeze_item(200)
+                    .send();
+                await operation.confirmation(1);
             });
 
             it("Then doesn't allow me to update it anymore", async () => {
                 try {
-                    await warehouseInstance.update_item(
-                        10,
-                        MichelsonMap.fromLiteral({
-                            XP: "99"
-                        }),
-                        200,
-                        "Christiano Ronaldo",
-                        undefined,
-                        10
-                    );
+                    const operation = await warehouseInstance.methods
+                        .update_item(
+                            10,
+                            MichelsonMap.fromLiteral({
+                                XP: "99"
+                            }),
+                            200,
+                            "Christiano Ronaldo",
+                            undefined,
+                            10
+                        )
+                        .send();
+
+                    await operation.confirmation(1);
 
                     console.error(
                         "Will fail: Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
                     );
-                    expect.fail(
+
+                    fail(
                         "Update_Item should throw an Error if the items `no_update_after` timestamp is in the past"
                     );
                 } catch (err) {
-                    expect(err.message).to.equal("ITEM_IS_FROZEN");
+                    expect(err.message).toEqual("ITEM_IS_FROZEN");
                 }
             });
 
             describe("When freezing an item that is already frozen", () => {
                 it("Then fails with an explicit error", async () => {
                     try {
-                        await warehouseInstance.freeze_item(200);
+                        const operation = await warehouseInstance.methods
+                            .freeze_item(200)
+                            .send();
+
+                        await operation.confirmation(1);
 
                         console.error(
                             "Will fail: Freeze_Item should throw an Error if item is already frozen as it should be immutable"
                         );
-                        expect.fail(
+
+                        fail(
                             "Freeze Item should throw an Error if item is already frozen as it should be immutable"
                         );
                     } catch (err) {
-                        expect(err.message).to.equal("ITEM_IS_FROZEN");
+                        expect(err.message).toEqual("ITEM_IS_FROZEN");
                     }
                 });
             });

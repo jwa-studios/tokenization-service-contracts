@@ -4,18 +4,17 @@ export * from "./src/warehouseItem";
 export interface Contract {
     contractName: string;
     michelson: object[];
-    source: string;
-    compiler: {
-        name: string;
-        version: string;
-    };
-    schemaVersion: string;
-    updatedAt: string;
 }
 
 const contracts = {
-    warehouse: require("./warehouse.json"),
-    inventory: require("./inventory.json")
+    warehouse: {
+        contractName: "Warehouse",
+        michelson: require("./warehouse.json")
+    },
+    inventory: {
+        contractName: "Inventory",
+        michelson: require("./inventory.json")
+    }
 } as {
     [k: string]: Contract;
 };
