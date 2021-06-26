@@ -86,31 +86,14 @@ The Tezos contracts are written in the `./contracts` folder.
 
 #### Test the contracts using the built-in sandbox
 
-Start the sandbox first:
+Start a tezos node first, use minilab or
 
 ```
-npm run start-sandbox
+docker run -d -p 20000:20000 tqtezos/flextesa:20210602 flobox start
 ```
 
 Then run the tests:
 
 ```
-npx truffle test
-```
-
-#### Test the contracts using minilab
-
-```
-npm install -g @jwalab/minilab
-minilab start
-```
-
-```
-npx truffle test --network minilab
-```
-
-#### Manually deploy the contracts
-
-```
-npx truffle migrate --network minilab
+npm run test
 ```

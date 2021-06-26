@@ -28,9 +28,23 @@ function getISODateNoMs(date = new Date()) {
     return date.toISOString();
 }
 
+async function originateContract(tezos, code, storage) {
+    const originatonOperation = await tezos.contract.originate({
+        code,
+        storage
+    });
+
+    const { contractAddress } = originatonOperation;
+
+    await originatonOperation.confirmation(1);
+
+    return tezos.contract.at(contractAddress);
+}
+
 module.exports = {
     getISODateNoMs,
     warehouseItemToObject,
     inventoryItemToObject,
-    getInventoryItemtAt
+    getInventoryItemtAt,
+    originateContract
 };

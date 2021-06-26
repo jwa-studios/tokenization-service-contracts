@@ -1,6 +1,6 @@
 {
     "name": "@jwalab/tokenization-service-contracts",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "files": [
         "index.js",
         "dist",
@@ -8,21 +8,19 @@
     ],
     "description": "Tokenization Service's Smart Contracts",
     "devDependencies": {
-        "@taquito/signer": "^8.0.3-beta.0",
-        "ganache-cli": "^6.12.2",
-        "ganache-core": "^2.13.2",
-        "husky": "4.3.0",
-        "prettier": "2.2.1",
-        "truffle": "5.5.0-tezos.4",
-        "typescript": "^4.2.4"
+        "@taquito/signer": "^9.1.1",
+        "husky": "7.0.0",
+        "jest": "^27.0.6",
+        "prettier": "2.3.2",
+        "typescript": "^4.3.5"
     },
     "scripts": {
-        "prepublishOnly": "npm run compile && node ./scripts/prepareDist.js && npm run lint-fix && tsc",
-        "start-sandbox": "ganache-cli --flavor tezos --seed alice -t $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")",
+        "prepublishOnly": "npm run compile && npm run prepare-dist && npm run lint-fix && tsc",
         "lint": "prettier --check .",
         "lint-fix": "prettier --write .",
-        "test": "truffle test",
-        "compile": "truffle compile"
+        "test": "jest --runInBand --testTimeout 20000 tests",
+        "prepare-dist": "./run prepare-dist",
+        "compile": "./run compile-contracts"
     },
     "repository": {
         "type": "git",
@@ -44,10 +42,7 @@
         "url": "https://github.com/jwa-studios/tokenization-service-contracts/issues"
     },
     "homepage": "https://github.com/jwa-studios/tokenization-service-contracts#readme",
-    "dependencies": {
-        "@jwalab/minilab": "0.0.3"
-    },
     "peerDependencies": {
-        "@taquito/taquito": "^8.1.1"
+        "@taquito/taquito": "^9.2.0"
     }
 }
